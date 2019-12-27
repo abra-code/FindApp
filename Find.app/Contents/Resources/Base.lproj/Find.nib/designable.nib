@@ -1,0 +1,1356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment version="101300" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15505"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Find" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" frameAutosaveName="Find" animationBehavior="default" id="1">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" topStrut="YES"/>
+            <rect key="contentRect" x="471" y="574" width="456" height="590"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <value key="minSize" type="size" width="456" height="590"/>
+            <value key="maxSize" type="size" width="5000" height="590"/>
+            <view key="contentView" id="2">
+                <rect key="frame" x="0.0" y="0.0" width="456" height="590"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="65">
+                        <rect key="frame" x="11" y="556" width="45" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Find In:" id="66">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <comboBox verticalHuggingPriority="750" fixedFrame="YES" tag="1" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="208" customClass="OMCComboBox">
+                        <rect key="frame" x="60" y="551" width="376" height="22"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="drag a folder here" drawsBackground="YES" numberOfVisibleItems="20" id="209">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </comboBoxCell>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                        </userDefinedRuntimeAttributes>
+                    </comboBox>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="61" customClass="OMCButton">
+                        <rect key="frame" x="351" y="14" width="90" height="28"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Find" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="62">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.run"/>
+                        </userDefinedRuntimeAttributes>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="106" customClass="OMCButton">
+                        <rect key="frame" x="256" y="14" width="90" height="28"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="107">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="omc.dialog.cancel"/>
+                        </userDefinedRuntimeAttributes>
+                    </button>
+                    <textField verticalHuggingPriority="750" fixedFrame="YES" tag="3" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dvu-ZY-Iuf">
+                        <rect key="frame" x="13" y="94" width="423" height="80"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" selectable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" borderStyle="border" title="/usr/bin/find" id="xBG-e9-g5b">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tdf-Dg-pvt">
+                        <rect key="frame" x="22" y="176" width="69" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Command:" id="0ab-68-h5w">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <box identifier="100" autoresizesSubviews="NO" fixedFrame="YES" borderType="line" title="Output" translatesAutoresizingMaskIntoConstraints="NO" id="m26-Pk-SHS" customClass="OMCBox">
+                        <rect key="frame" x="10" y="194" width="429" height="90"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <view key="contentView" id="6ab-Y0-h64">
+                            <rect key="frame" x="3" y="3" width="423" height="72"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <comboBox verticalHuggingPriority="750" fixedFrame="YES" tag="902" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ndE-5i-SsH" customClass="OMCComboBox">
+                                    <rect key="frame" x="20" y="10" width="386" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="pipe tool, save path or command to execute" drawsBackground="YES" numberOfVisibleItems="20" id="wGF-zB-g43">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </comboBoxCell>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                    </userDefinedRuntimeAttributes>
+                                </comboBox>
+                                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="901" translatesAutoresizingMaskIntoConstraints="NO" id="XCl-Is-kM5" customClass="OMCPopUpButton">
+                                    <rect key="frame" x="17" y="37" width="77" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <popUpButtonCell key="cell" type="push" title="View" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="pCH-rc-wC4" id="0km-sV-DGr">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <menu key="menu" title="OtherViews" id="R5d-92-YhW">
+                                            <items>
+                                                <menuItem title="View" state="on" id="pCH-rc-wC4" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Pipe to" id="JtD-33-ccP" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="|"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Save to" id="RpO-Fs-dkO" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="&gt;"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Custom" id="Exa-Ay-fDD" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="?"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.output.choice.change"/>
+                                    </userDefinedRuntimeAttributes>
+                                </popUpButton>
+                            </subviews>
+                        </view>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="tag">
+                                <integer key="value" value="100"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </box>
+                    <tabView fixedFrame="YES" controlSize="small" translatesAutoresizingMaskIntoConstraints="NO" id="d0x-IG-wsx">
+                        <rect key="frame" x="6" y="376" width="437" height="165"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <tabViewItems>
+                            <tabViewItem label="Name" identifier="" id="A9h-KJ-abI">
+                                <view key="view" id="7RL-85-Tc9">
+                                    <rect key="frame" x="10" y="29" width="417" height="123"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="101" translatesAutoresizingMaskIntoConstraints="NO" id="112" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="14" y="83" width="106" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Name" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="mXh-46-c5U" id="115">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="116">
+                                                    <items>
+                                                        <menuItem title="Name" state="on" id="mXh-46-c5U" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-iname"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Full Path" id="PoF-4S-HSu" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-ipath"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.pattern.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <comboBox verticalHuggingPriority="750" fixedFrame="YES" tag="102" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F5t-u7-64l" customClass="OMCComboBox">
+                                            <rect key="frame" x="125" y="82" width="278" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="text or shell/regex pattern" drawsBackground="YES" numberOfVisibleItems="20" id="1Eg-nZ-pAX">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </comboBoxCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </comboBox>
+                                        <button fixedFrame="YES" tag="103" translatesAutoresizingMaskIntoConstraints="NO" id="109" customClass="OMCButton">
+                                            <rect key="frame" x="14" y="63" width="105" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Case sensitive" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="126">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </button>
+                                        <button fixedFrame="YES" tag="104" translatesAutoresizingMaskIntoConstraints="NO" id="P5K-iA-Cne" customClass="OMCButton">
+                                            <rect key="frame" x="14" y="43" width="116" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Use regex pattern" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="ytx-1c-OSA">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </button>
+                                        <button fixedFrame="YES" tag="111" translatesAutoresizingMaskIntoConstraints="NO" id="sMt-dL-xce" customClass="OMCButton">
+                                            <rect key="frame" x="14" y="25" width="258" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Traverse file hierarchies in alphabetical order" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="hT6-Fa-uC8">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </button>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Attributes" identifier="" id="8jh-Cy-NTh">
+                                <view key="view" id="QW5-oM-uYa">
+                                    <rect key="frame" x="10" y="25" width="417" height="127"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="201" translatesAutoresizingMaskIntoConstraints="NO" id="7ac-AI-ijZ" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="130" y="87" width="132" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Any" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="76y-nG-m74" id="3oX-8O-sCb">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="hle-cw-wmP">
+                                                    <items>
+                                                        <menuItem title="Any" state="on" id="76y-nG-m74" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Regular files" id="lrS-vG-e8m" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="f"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Directories" id="fog-Zo-e7a" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="d"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Symbolic links" id="ieh-Y3-qMX" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="l"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem isSeparatorItem="YES" id="m8e-oe-03H"/>
+                                                        <menuItem title="Not regular files" id="nTe-Oi-Dbe" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="!f"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Not directories" id="Wcl-UG-gCb" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="!d"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Not symbolic links" id="yCu-vX-XWZ" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="!l"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BT5-va-jJd">
+                                            <rect key="frame" x="15" y="92" width="55" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="File Type:" id="IdK-2M-Hkl">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Lwi-FJ-aQb">
+                                            <rect key="frame" x="17" y="73" width="383" height="5"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        </box>
+                                        <comboBox verticalHuggingPriority="750" fixedFrame="YES" tag="202" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MU2-eN-wAD" customClass="OMCComboBox">
+                                            <rect key="frame" x="133" y="37" width="270" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="Ignore" placeholderString="extended attribute name" drawsBackground="YES" numberOfVisibleItems="20" id="Eiv-T6-YUz">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                <objectValues>
+                                                    <string>Ignore</string>
+                                                    <string>Any</string>
+                                                    <string>None</string>
+                                                    <string>com.apple.FinderInfo</string>
+                                                    <string>com.apple.ResourceFork</string>
+                                                    <string>com.apple.TextEncoding</string>
+                                                    <string>com.apple.quarantine</string>
+                                                    <string>com.apple.lastuseddate#PS</string>
+                                                    <string>com.apple.genstore.origposixname</string>
+                                                    <string>com.apple.LaunchServices.OpenWith</string>
+                                                    <string>com.apple.metadata:_kMDItemUserTags</string>
+                                                    <string>com.apple.metadata:kMDItemWhereFroms</string>
+                                                    <string>com.apple.metadata:kMDItemDownloadedDate</string>
+                                                    <string>com.apple.metadata:kMDItemOriginSenderDisplayName</string>
+                                                    <string>com.apple.metadata:com_apple_mail_dateReceived</string>
+                                                    <string>com.apple.metadata:com_apple_mail_dateSent</string>
+                                                    <string>com.apple.metadata:com_apple_mail_isRemoteAttachment</string>
+                                                    <string>com.apple.metadata:kMDItemIsScreenCapture</string>
+                                                    <string>com.apple.metadata:kMDItemScreenCaptureGlobalRect</string>
+                                                    <string>com.apple.metadata:kMDItemScreenCaptureType</string>
+                                                </objectValues>
+                                            </comboBoxCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </comboBox>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ll3-Vl-dhz">
+                                            <rect key="frame" x="15" y="43" width="112" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Extended Attributes:" id="wOf-tX-svs">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Size" identifier="" id="bJH-Of-kQq">
+                                <view key="view" id="5GH-Qw-xil">
+                                    <rect key="frame" x="10" y="25" width="417" height="127"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="301" translatesAutoresizingMaskIntoConstraints="NO" id="jLD-wb-gYc" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="14" y="87" width="98" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Ignore" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="Iis-R8-wFx" id="DVs-H0-r1Z">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="cbL-IT-24l">
+                                                    <items>
+                                                        <menuItem title="Ignore" state="on" id="Iis-R8-wFx" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="&gt;" id="ObG-tP-w1S" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="+"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="&lt;" id="m7s-YK-ieZ" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="=" id="hNj-3e-6n3" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="="/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.size.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="302" translatesAutoresizingMaskIntoConstraints="NO" id="wGC-Vk-IZl" customClass="OMCTextField">
+                                            <rect key="frame" x="122" y="90" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. 1000" drawsBackground="YES" id="2C6-I7-qvh">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="303" translatesAutoresizingMaskIntoConstraints="NO" id="Lhj-yq-A88" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="218" y="88" width="77" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="MB" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="JnJ-QB-6Do" id="krd-8j-sSP">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="v8e-w1-dHv">
+                                                    <items>
+                                                        <menuItem title="Bytes" id="y3P-Dr-etu" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="c"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="kB" id="K60-Hg-IoC" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="k"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="MB" state="on" id="JnJ-QB-6Do" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="M"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="GB" id="wqh-xx-7Vh" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="G"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="TB" id="e15-Qu-hPj" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="T"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="PB" id="E9K-z1-FSf" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="P"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="aWi-DX-RyL">
+                                            <rect key="frame" x="17" y="73" width="383" height="5"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        </box>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="304" translatesAutoresizingMaskIntoConstraints="NO" id="n2z-j6-jX5" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="118" y="37" width="220" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Skip" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="a5v-n1-t9N" id="Omu-VK-a1Z">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="Co3-XB-lnD">
+                                                    <items>
+                                                        <menuItem title="Skip" state="on" id="a5v-n1-t9N" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Only empty files or directories" id="dGq-gN-IyT" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-empty"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Only non-empty files or directories" id="AWq-7v-nY6" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-not -empty"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ANr-uW-fzz">
+                                            <rect key="frame" x="15" y="42" width="94" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Emptiness Test:" id="Fdl-nF-4uT">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Permissions" identifier="" id="oW5-QN-JtH">
+                                <view key="view" ambiguous="YES" id="iTm-FL-Ctx">
+                                    <rect key="frame" x="10" y="25" width="417" height="127"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="401" translatesAutoresizingMaskIntoConstraints="NO" id="P7r-CX-cee" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="14" y="87" width="122" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Ignore" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="D7J-YV-CUc" id="Lc9-lQ-brV">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="GwJ-5o-7Dn">
+                                                    <items>
+                                                        <menuItem title="Ignore" state="on" id="D7J-YV-CUc" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="All Bits Set" id="WA1-Tm-06Z" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Any Bit Set" id="zMq-04-6K2" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="+"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Exact Bit Match" id="987-qy-y4t" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="="/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.permissions.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <gridView focusRingType="none" fixedFrame="YES" xPlacement="leading" yPlacement="center" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="igN-o7-S2b" customClass="OMCGridView">
+                                            <rect key="frame" x="161" y="34" width="177" height="74"/>
+                                            <rows>
+                                                <gridRow id="xAU-t7-bOE"/>
+                                                <gridRow id="gOf-Kb-ONS"/>
+                                                <gridRow id="cgs-y6-EXA"/>
+                                                <gridRow id="fZA-XI-ham"/>
+                                            </rows>
+                                            <columns>
+                                                <gridColumn id="BZJ-ZU-j8R"/>
+                                                <gridColumn xPlacement="center" leadingPadding="10" id="qEi-cV-Ftj"/>
+                                                <gridColumn xPlacement="center" id="RHx-ct-abu"/>
+                                                <gridColumn xPlacement="center" id="0XN-aS-Uvp"/>
+                                            </columns>
+                                            <gridCells>
+                                                <gridCell row="xAU-t7-bOE" column="BZJ-ZU-j8R" id="9bj-yG-UlL"/>
+                                                <gridCell row="xAU-t7-bOE" column="qEi-cV-Ftj" id="jrH-Ay-Taj">
+                                                    <textField key="contentView" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zCn-4B-WQl" userLabel="Read">
+                                                        <rect key="frame" x="47" y="60" width="40" height="14"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title=" Read  " id="BHH-cY-xrI" userLabel="Read">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </gridCell>
+                                                <gridCell row="xAU-t7-bOE" column="RHx-ct-abu" id="8gP-r0-YXT">
+                                                    <textField key="contentView" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wvr-PV-geU">
+                                                        <rect key="frame" x="89" y="60" width="42" height="14"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title=" Write  " id="fBY-Eu-M8p">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </gridCell>
+                                                <gridCell row="xAU-t7-bOE" column="0XN-aS-Uvp" id="0yZ-31-mh7">
+                                                    <textField key="contentView" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="las-Bo-xfn">
+                                                        <rect key="frame" x="133" y="60" width="46" height="14"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Execute" id="9Y6-Th-Xj8">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </gridCell>
+                                                <gridCell row="gOf-Kb-ONS" column="BZJ-ZU-j8R" id="YsN-AR-Skx">
+                                                    <textField key="contentView" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R0S-fG-35b">
+                                                        <rect key="frame" x="-2" y="40" width="29" height="14"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="User" id="FUV-nE-QOq">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </gridCell>
+                                                <gridCell row="gOf-Kb-ONS" column="qEi-cV-Ftj" id="Enn-Ba-hvP">
+                                                    <button key="contentView" tag="411" translatesAutoresizingMaskIntoConstraints="NO" id="lkQ-xl-VwJ" customClass="OMCButton">
+                                                        <rect key="frame" x="56" y="38" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="PsZ-BW-Bn7">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="gOf-Kb-ONS" column="RHx-ct-abu" id="i94-tU-JxZ">
+                                                    <button key="contentView" tag="412" translatesAutoresizingMaskIntoConstraints="NO" id="ufb-0b-oGw" customClass="OMCButton">
+                                                        <rect key="frame" x="99" y="38" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="ggP-Xf-GIb">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="gOf-Kb-ONS" column="0XN-aS-Uvp" id="7vD-BG-fFS">
+                                                    <button key="contentView" tag="413" translatesAutoresizingMaskIntoConstraints="NO" id="qE1-JA-FIc" customClass="OMCButton">
+                                                        <rect key="frame" x="145" y="38" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="S3g-7q-N2c">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="cgs-y6-EXA" column="BZJ-ZU-j8R" id="ad9-fw-lTw">
+                                                    <textField key="contentView" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vTS-rD-ieK">
+                                                        <rect key="frame" x="-2" y="20" width="37" height="14"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Group" id="wUf-HP-BO9">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </gridCell>
+                                                <gridCell row="cgs-y6-EXA" column="qEi-cV-Ftj" id="Imr-th-EiG">
+                                                    <button key="contentView" tag="421" translatesAutoresizingMaskIntoConstraints="NO" id="aOL-hT-4B2" customClass="OMCButton">
+                                                        <rect key="frame" x="56" y="18" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="7EV-Uq-2TE">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="cgs-y6-EXA" column="RHx-ct-abu" id="BEq-EU-f3a">
+                                                    <button key="contentView" tag="422" translatesAutoresizingMaskIntoConstraints="NO" id="E4k-Ko-7oD" customClass="OMCButton">
+                                                        <rect key="frame" x="99" y="18" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="p09-Nc-WGR">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="cgs-y6-EXA" column="0XN-aS-Uvp" id="I4z-8i-bKX">
+                                                    <button key="contentView" tag="423" translatesAutoresizingMaskIntoConstraints="NO" id="z1e-HC-Vaw" customClass="OMCButton">
+                                                        <rect key="frame" x="145" y="18" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="KFZ-7T-sTI">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="fZA-XI-ham" column="BZJ-ZU-j8R" id="XKe-c9-h2N">
+                                                    <textField key="contentView" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AhK-58-sC5">
+                                                        <rect key="frame" x="-2" y="0.0" width="34" height="14"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Other" id="4bn-Zq-Zvw">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </gridCell>
+                                                <gridCell row="fZA-XI-ham" column="qEi-cV-Ftj" id="bNo-AO-jjR">
+                                                    <button key="contentView" tag="431" translatesAutoresizingMaskIntoConstraints="NO" id="KRF-l6-nFm" customClass="OMCButton">
+                                                        <rect key="frame" x="56" y="-2" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="bsf-SO-2Me">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="fZA-XI-ham" column="RHx-ct-abu" id="g9A-ah-bwB">
+                                                    <button key="contentView" tag="432" translatesAutoresizingMaskIntoConstraints="NO" id="ESC-zY-Lgh" customClass="OMCButton">
+                                                        <rect key="frame" x="99" y="-2" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="H1k-us-fWm">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                                <gridCell row="fZA-XI-ham" column="0XN-aS-Uvp" id="SnZ-gB-X9L">
+                                                    <button key="contentView" tag="433" translatesAutoresizingMaskIntoConstraints="NO" id="zuf-GZ-QZU" customClass="OMCButton">
+                                                        <rect key="frame" x="145" y="-2" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="K6m-O3-FS4">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </button>
+                                                </gridCell>
+                                            </gridCells>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="tag">
+                                                    <integer key="value" value="402"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                        </gridView>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Time" identifier="" id="c41-Xl-3jI">
+                                <view key="view" id="chH-xF-5G8">
+                                    <rect key="frame" x="10" y="25" width="417" height="127"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N7k-lt-FbA">
+                                            <rect key="frame" x="15" y="92" width="76" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Last Access:" id="HHk-5Q-rUC">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dQX-om-nHW">
+                                            <rect key="frame" x="15" y="65" width="81" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Creation Time:" id="cAl-O3-lxL">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jj5-8W-L3U">
+                                            <rect key="frame" x="15" y="38" width="102" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Modification Time:" id="Gho-7s-u3c">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="512" translatesAutoresizingMaskIntoConstraints="NO" id="Rgh-D0-Kuj" customClass="OMCTextField">
+                                            <rect key="frame" x="227" y="89" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="N" drawsBackground="YES" id="Bmc-2U-KtL">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" allowsFloats="NO" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="ZT4-gS-afU"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="513" translatesAutoresizingMaskIntoConstraints="NO" id="cfp-Ka-Fo4" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="323" y="87" width="81" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="hours" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="BGh-Hn-bBu" id="Rsx-Er-48L">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="4j2-pZ-cKy">
+                                                    <items>
+                                                        <menuItem title="seconds" id="vDq-Am-Vjg" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="s"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="minutes" id="JZE-cW-Wb8" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="m"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="hours" state="on" id="BGh-Hn-bBu" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="h"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="days" id="gkF-Vb-WQH" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="d"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="weeks" id="AbJ-Z8-tnh" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="w"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qZe-sm-3IG">
+                                            <rect key="frame" x="15" y="11" width="110" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Last Status Change:" id="0O6-HW-TDF">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="521" translatesAutoresizingMaskIntoConstraints="NO" id="map-0M-oY6" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="130" y="60" width="92" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Any" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="cxM-Vk-8ej" id="3bq-mW-GLj">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="Yku-Ch-U4L">
+                                                    <items>
+                                                        <menuItem title="Any" state="on" id="cxM-Vk-8ej" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Within" id="czQ-3r-U4f" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Above" id="8WF-zg-t5J" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="+"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.time.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="531" translatesAutoresizingMaskIntoConstraints="NO" id="ak0-z5-OR6" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="130" y="33" width="92" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Any" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="0Yp-1P-TZu" id="Wnc-1R-W6Z">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="QpQ-Wf-Evm">
+                                                    <items>
+                                                        <menuItem title="Any" state="on" id="0Yp-1P-TZu" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Within" id="xy7-z8-kok" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Above" id="uJL-SD-GWC" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="+"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.time.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="541" translatesAutoresizingMaskIntoConstraints="NO" id="z7D-7V-rKu" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="130" y="6" width="92" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Any" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="kv5-Ck-osO" id="7Pj-ez-vrz">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="LKa-Lh-BDx">
+                                                    <items>
+                                                        <menuItem title="Any" state="on" id="kv5-Ck-osO" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Within" id="afT-l5-OvW" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Above" id="UBf-x7-cxY" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="+"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.time.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="511" translatesAutoresizingMaskIntoConstraints="NO" id="KhR-oY-ILQ" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="130" y="87" width="92" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Any" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="BQA-WI-3o3" id="yFq-Nj-U2U">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="O1l-kz-epG">
+                                                    <items>
+                                                        <menuItem title="Any" state="on" id="BQA-WI-3o3" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value=""/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Within" id="sbC-0U-DGH" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="Above" id="ZbA-uN-xXN" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="+"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.time.choice.change"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="522" translatesAutoresizingMaskIntoConstraints="NO" id="chQ-xy-e8o" customClass="OMCTextField">
+                                            <rect key="frame" x="227" y="63" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="N" drawsBackground="YES" id="eSk-P8-SpB">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" allowsFloats="NO" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="pWe-TY-DBj"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="532" translatesAutoresizingMaskIntoConstraints="NO" id="CtP-hT-akf" customClass="OMCTextField">
+                                            <rect key="frame" x="227" y="35" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="N" drawsBackground="YES" id="1S0-BB-f6e">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" allowsFloats="NO" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="B2J-tX-3no"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="542" translatesAutoresizingMaskIntoConstraints="NO" id="w2C-lJ-ohY" customClass="OMCTextField">
+                                            <rect key="frame" x="227" y="9" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="N" drawsBackground="YES" id="WZe-Ca-5WB">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" allowsFloats="NO" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="HZ2-y3-tbQ"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="523" translatesAutoresizingMaskIntoConstraints="NO" id="zBO-vE-QhU" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="323" y="60" width="81" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="hours" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="ud0-Ro-0g8" id="8zc-5I-xMR">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="Hsj-Ql-66T">
+                                                    <items>
+                                                        <menuItem title="seconds" id="5CZ-pR-HUn" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="s"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="minutes" id="TuI-42-aBX" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="m"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="hours" state="on" id="ud0-Ro-0g8" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="h"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="days" id="2Z5-rC-x31" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="d"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="weeks" id="cRc-Wq-YHc" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="w"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="533" translatesAutoresizingMaskIntoConstraints="NO" id="8ug-t6-nlY" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="322" y="32" width="81" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="hours" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="rwj-BQ-66Q" id="p8W-7S-tSE">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="eq6-Ka-xtj">
+                                                    <items>
+                                                        <menuItem title="seconds" id="3a0-Ro-GZS" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="s"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="minutes" id="Tgq-XC-l1M" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="m"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="hours" state="on" id="rwj-BQ-66Q" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="h"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="days" id="B69-ZA-q5h" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="d"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="weeks" id="c4s-4a-1tt" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="w"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="543" translatesAutoresizingMaskIntoConstraints="NO" id="3Cj-Cl-HyR" customClass="OMCPopUpButton">
+                                            <rect key="frame" x="322" y="7" width="81" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="hours" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="Yyq-fI-9kb" id="GMV-Mf-4eV">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" title="OtherViews" id="omk-8P-s4z">
+                                                    <items>
+                                                        <menuItem title="seconds" id="EM6-pI-B0e" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="s"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="minutes" id="EGb-P3-MXw" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="m"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="hours" state="on" id="Yyq-fI-9kb" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="h"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="days" id="u4C-lT-ydz" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="d"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                        <menuItem title="weeks" id="rvg-cV-ebz" customClass="OMCMenuItem">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="w"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </menuItem>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </popUpButton>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Advanced" identifier="" id="oLH-sP-6lZ">
+                                <view key="view" id="jiv-44-0iG">
+                                    <rect key="frame" x="10" y="25" width="417" height="127"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yAS-7N-nJm">
+                                            <rect key="frame" x="15" y="95" width="91" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Directory Depth:" id="Nj8-lj-wqW">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3HW-mg-Zmx">
+                                            <rect key="frame" x="123" y="95" width="52" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Minimum" id="0C4-GK-h1W">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="611" translatesAutoresizingMaskIntoConstraints="NO" id="P53-kS-VNh" customClass="OMCTextField">
+                                            <rect key="frame" x="183" y="92" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="N" drawsBackground="YES" id="xqi-QP-VYw">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" allowsFloats="NO" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="Oaj-l4-2Pd"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="612" translatesAutoresizingMaskIntoConstraints="NO" id="zJf-Oo-VDZ" customClass="OMCTextField">
+                                            <rect key="frame" x="183" y="65" width="91" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="N" drawsBackground="YES" id="t2L-KF-szb">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" allowsFloats="NO" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="Bnh-jf-f5F"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VjP-qO-sW4">
+                                            <rect key="frame" x="122" y="68" width="55" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Maximum" id="ywf-Qh-e3O">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                        </tabViewItems>
+                    </tabView>
+                    <box identifier="100" autoresizesSubviews="NO" fixedFrame="YES" borderType="line" title="Action" translatesAutoresizingMaskIntoConstraints="NO" id="kes-ax-UIA" customClass="OMCBox">
+                        <rect key="frame" x="10" y="288" width="429" height="90"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <view key="contentView" id="AVv-XB-51N">
+                            <rect key="frame" x="3" y="3" width="423" height="72"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" tag="801" translatesAutoresizingMaskIntoConstraints="NO" id="Py8-4K-UQO" customClass="OMCPopUpButton">
+                                    <rect key="frame" x="17" y="37" width="240" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <popUpButtonCell key="cell" type="push" title="Print" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" selectedItem="GCq-Ue-77N" id="WPy-qj-Yj4">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <menu key="menu" title="OtherViews" id="enA-WW-Wfl">
+                                            <items>
+                                                <menuItem title="Print" state="on" id="GCq-Ue-77N" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-print"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="List with &quot;ls&quot;" id="4Rz-EK-gxY" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-ls"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Execute tool" id="bkU-a9-7Ll" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-exec"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Execute tool in found item directory" id="tgi-22-AAJ" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-execdir"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Print with print0 (for piping to xargs -0)" id="biH-ve-DaS" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-print0"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                                <menuItem title="Delete ⚠️" id="Wwr-Hv-09d" customClass="OMCMenuItem">
+                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="mappedValue" value="-delete"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </menuItem>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.action.choice.change"/>
+                                    </userDefinedRuntimeAttributes>
+                                </popUpButton>
+                                <comboBox verticalHuggingPriority="750" fixedFrame="YES" tag="802" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2e2-c5-qPy" customClass="OMCComboBox">
+                                    <rect key="frame" x="20" y="10" width="386" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="tool to execute; use {} as param for found file path; no semicolon" drawsBackground="YES" numberOfVisibleItems="20" id="oEQ-Df-SQi">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </comboBoxCell>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                    </userDefinedRuntimeAttributes>
+                                </comboBox>
+                                <button fixedFrame="YES" tag="803" translatesAutoresizingMaskIntoConstraints="NO" id="14Q-83-HeW" customClass="OMCButton">
+                                    <rect key="frame" x="265" y="40" width="73" height="18"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="check" title="Also print" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" state="on" inset="2" id="LHl-xp-2qY">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.update.output"/>
+                                    </userDefinedRuntimeAttributes>
+                                </button>
+                            </subviews>
+                        </view>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="tag">
+                                <integer key="value" value="100"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </box>
+                    <comboBox verticalHuggingPriority="750" fixedFrame="YES" tag="2" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="206" customClass="OMCComboBox">
+                        <rect key="frame" x="57" y="56" width="229" height="22"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="name a config to save your settings" drawsBackground="YES" numberOfVisibleItems="20" id="207">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </comboBoxCell>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.load.config"/>
+                        </userDefinedRuntimeAttributes>
+                    </comboBox>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="71" customClass="OMCButton">
+                        <rect key="frame" x="286" y="53" width="54" height="28"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Save" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="72">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="commandID" value="find.save.config"/>
+                        </userDefinedRuntimeAttributes>
+                    </button>
+                    <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="67">
+                        <rect key="frame" x="11" y="61" width="42" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Config:" id="68">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="initialFirstResponder" destination="208" id="HWO-bf-g9V"/>
+            </connections>
+            <point key="canvasLocation" x="-42" y="-189"/>
+        </window>
+    </objects>
+</document>
