@@ -6,7 +6,7 @@ https://github.com/abra-code/OMC
 
 Getting started
 
-1. Launch Find.app. Type "\*name\*" without quotes in "Name" edit field and hit enter. A window will open with a list of files with "name" word in their name found in your user directory. This includes non-indexed locations like ~/Library which macOS Spotlight Search does not produce is its search results.
+1. Launch Find.app. Type "\*name\*" without quotes in "Name" edit field and hit enter. A window will open with a list of files with "name" word in their name found in your user directory. This includes non-indexed locations like ~/Library which macOS Spotlight Search does not produce in its search results.
 2. Drag a folder to the app icon. This is now set as a new search location. Leave the "Name" field empty. Switch to "Attributes" tab and select "File Type: Directories". Switch to "Size" tab and select "Emptiness test: Only empty files or directories". Hit "Find" button at the bottom to find all empty folders in your chosen location.
 
 
