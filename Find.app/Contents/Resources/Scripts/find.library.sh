@@ -336,5 +336,43 @@ update_time_controls()
 	fi
 }
 
+append_recent_item()
+{
+	local list_name="$1"
+	local max_count="$2"
+	local recent_item="$3"
 
+	# do not add empty items
+	if [ -z "$recent_item" ]; then
+		return 0
+	fi
+
+	# existence of this dir is ensured in dialog init handler
+	local app_support_dir="$HOME/Library/Application Support/com.abracode.Find"
+	local recent_list_path="$app_support_dir/$list_name"
+
+	local recent_items_array
+	# the new item might be a duplicate of an existing item in array
+	recent_items_array=( "$recent_item" )
+	while IFS=$'\n' read -r one_item; do
+		if [ "$recent_item" != "$one_item" ]; then
+			recent_items_array+=("$one_item")
+		fi
+	done < "$recent_list_path"
+	
+	local array_count=${#recent_items_array[@]}
+	if [ "$array_count" -gt "$max_count" ]; then
+		array_count="$max_count"
+	fi
+	
+	/bin/rm "$recent_list_path"
+
+	# in bash array index starts with 0 but in zsh it starts with 1!
+	# TODO: verify it works as expected in 10.15 with default zsh shell 
+	local line_index=0
+	while [ "$line_index" -lt "$array_count" ]; do
+		echo "${recent_items_array[$line_index]}" >> "$recent_list_path"
+		let "line_index++"
+	done
+}
 

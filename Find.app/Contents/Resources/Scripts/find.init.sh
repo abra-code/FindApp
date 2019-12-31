@@ -12,8 +12,12 @@ else
 	"$pasteboard" "FIND_FOLDER_PATH" set ""
 fi
 
-if [ -z "$find_init_dir" ] && [ -f "/Users/$USER/Library/Preferences/com.abracode.find.plist" ]; then
-	find_init_dir=$(/usr/bin/defaults read com.abracode.find LAST_DIR)
+app_support_dir="$HOME/Library/Application Support/com.abracode.Find"
+/bin/mkdir -p "$app_support_dir"
+recent_locations_path="$app_support_dir/recent_locations"
+
+if [ -z "$find_init_dir" ] && [ -f "$recent_locations_path" ]; then
+	find_init_dir=$(/usr/bin/head -n 1 "$recent_locations_path")
 fi
 
 if [ -n "$find_init_dir" ] && [ ! -d "$find_init_dir" ]; then
@@ -27,7 +31,24 @@ fi
 #echo "find_init_dir = $find_init_dir"
 "$dialog" "$OMC_NIB_DLG_GUID" 1 "$find_init_dir"
 
-find_support_dir="/Users/$USER/Library/Application Support/Find"
-/bin/mkdir -p "$find_support_dir"
+# recent locations
+/bin/cat "$recent_locations_path" | "$dialog" "$OMC_NIB_DLG_GUID" 1 omc_list_set_items_from_stdin
+
+# recent name patterns
+recent_patterns_path="$app_support_dir/recent_patterns"
+/bin/cat "$recent_patterns_path" | "$dialog" "$OMC_NIB_DLG_GUID" 102 omc_list_set_items_from_stdin
+
+# recent action/exec scripts
+recent_exec_scripts_path="$app_support_dir/recent_exec_scripts"
+/bin/cat "$recent_exec_scripts_path" | "$dialog" "$OMC_NIB_DLG_GUID" 802 omc_list_set_items_from_stdin
+
+# recent output scripts
+recent_output_scripts_path="$app_support_dir/recent_output_scripts"
+/bin/cat "$recent_output_scripts_path" | "$dialog" "$OMC_NIB_DLG_GUID" 902 omc_list_set_items_from_stdin
+
+# recent extended attributes, combo box #202 is different because we want to keep pre-populated items
+/bin/cat "$OMC_APP_BUNDLE_PATH/Contents/Resources/extended_attributes.txt" | "$dialog" "$OMC_NIB_DLG_GUID" 202 omc_list_set_items_from_stdin
+recent_extended_attributes_path="$app_support_dir/recent_extended_attributes"
+/bin/cat "$recent_extended_attributes_path" | "$dialog" "$OMC_NIB_DLG_GUID" 202 omc_list_append_items_from_stdin
 
 "$next_command" "$OMC_CURRENT_COMMAND_GUID" "find.update.all.controls"
