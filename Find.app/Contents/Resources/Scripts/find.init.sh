@@ -13,7 +13,8 @@ else
 fi
 
 app_support_dir="$HOME/Library/Application Support/com.abracode.Find"
-/bin/mkdir -p "$app_support_dir"
+configs_dir="$app_support_dir/Configs"
+/bin/mkdir -p "$configs_dir"
 recent_locations_path="$app_support_dir/recent_locations"
 
 if [ -z "$find_init_dir" ] && [ -f "$recent_locations_path" ]; then
@@ -45,6 +46,9 @@ recent_exec_scripts_path="$app_support_dir/recent_exec_scripts"
 # recent output scripts
 recent_output_scripts_path="$app_support_dir/recent_output_scripts"
 /bin/cat "$recent_output_scripts_path" | "$dialog" "$OMC_NIB_DLG_GUID" 902 omc_list_set_items_from_stdin
+
+# configs
+/bin/ls "$configs_dir" | "$dialog" "$OMC_NIB_DLG_GUID" 2 omc_list_set_items_from_stdin
 
 # recent extended attributes, combo box #202 is different because we want to keep pre-populated items
 /bin/cat "$OMC_APP_BUNDLE_PATH/Contents/Resources/extended_attributes.txt" | "$dialog" "$OMC_NIB_DLG_GUID" 202 omc_list_set_items_from_stdin

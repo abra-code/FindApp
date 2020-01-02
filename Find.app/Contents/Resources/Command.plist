@@ -269,6 +269,40 @@
 			<key>VERSION</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>ACTIVATION_MODE</key>
+			<string>act_always</string>
+			<key>COMMAND</key>
+			<array>
+			</array>
+			<key>COMMAND_ID</key>
+			<string>find.save.config</string>
+			<key>EXECUTION_MODE</key>
+			<string>exe_script_file</string>
+			<key>NAME</key>
+			<array>
+				<string>Find</string>
+			</array>
+			<key>VERSION</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>ACTIVATION_MODE</key>
+			<string>act_always</string>
+			<key>COMMAND</key>
+			<array>
+			</array>
+			<key>COMMAND_ID</key>
+			<string>find.load.config</string>
+			<key>EXECUTION_MODE</key>
+			<string>exe_script_file</string>
+			<key>NAME</key>
+			<array>
+				<string>Find</string>
+			</array>
+			<key>VERSION</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>VERSION</key>
 	<integer>2</integer>

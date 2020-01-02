@@ -368,7 +368,8 @@ append_recent_item()
 	/bin/rm "$recent_list_path"
 
 	# in bash array index starts with 0 but in zsh it starts with 1!
-	# TODO: verify it works as expected in 10.15 with default zsh shell 
+	# in macOS 10.15 Catalina zsh is the default shell but it does not change /bin/sh
+	# which is still bash
 	local line_index=0
 	while [ "$line_index" -lt "$array_count" ]; do
 		echo "${recent_items_array[$line_index]}" >> "$recent_list_path"
