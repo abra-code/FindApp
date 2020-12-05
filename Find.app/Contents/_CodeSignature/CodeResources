@@ -104,6 +104,15 @@
 	</dict>
 	<key>files2</key>
 	<dict>
+		<key>Frameworks/Abracode.framework</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			hkP2utgjpw/gUzdc9TQkrJKtV5I=
+			</data>
+			<key>requirement</key>
+			<string>identifier "com.abracode.Find" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = T9NM2ZLDTY</string>
+		</dict>
 		<key>Resources/Base.lproj/Find.nib/designable.nib</key>
 		<dict>
 			<key>hash2</key>
