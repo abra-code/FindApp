@@ -92,7 +92,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			ToSbeulfMK6xQE3TWhWkjuPOMdE=
+			fmdMOp4sZl/vre0rQN8HYZqy/00=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -108,7 +108,7 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			hkP2utgjpw/gUzdc9TQkrJKtV5I=
+			x4w9sHCEYC+OYURimHIJLixqoYk=
 			</data>
 			<key>requirement</key>
 			<string>identifier "com.abracode.Find" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = T9NM2ZLDTY</string>
@@ -264,7 +264,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			08jVdNnLpdHHtWCxSiQ+3xRF1fDC8I3p7M0FIbw+Myw=
+			WiZ0rhDWtL8+mbBfhEIGxxKiViRPDIn94A/Nc58+D7I=
 			</data>
 			<key>optional</key>
 			<true/>

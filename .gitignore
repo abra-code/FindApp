@@ -1,2 +1,5 @@
 
 .DS_Store
+Find.app/Contents/Frameworks
+Find.app/Contents/MacOS/OMCApplet
+Find.app/Contents/_CodeSignature/CodeResources
