@@ -4,6 +4,10 @@
 <dict>
 	<key>files</key>
 	<dict>
+		<key>Resources/Assets.car</key>
+		<data>
+		/OmHiTmTfix9ZJpb5hI/ltahFGU=
+		</data>
 		<key>Resources/Base.lproj/Find.nib/designable.nib</key>
 		<data>
 		R/meFyg8SQzjb73L78MgViqcUJI=
@@ -22,7 +26,11 @@
 		</data>
 		<key>Resources/Command.plist</key>
 		<data>
-		2PFi3mSXQauurkGsUbVZZaUtSQo=
+		QD5vORGbZQj2ZVRrsmzeNiO7iBE=
+		</data>
+		<key>Resources/Find.icns</key>
+		<data>
+		U60CG7Db39a6qkFxE/HhPwKBwk4=
 		</data>
 		<key>Resources/Scripts/find.action.choice.change.sh</key>
 		<data>
@@ -80,10 +88,6 @@
 		<data>
 		4uwaq1dNRymVWcZFNyiUkas5s2w=
 		</data>
-		<key>Resources/app.icns</key>
-		<data>
-		RnXdOEfan4rgqF70sNO/RryuXyY=
-		</data>
 		<key>Resources/defaults.tsv</key>
 		<data>
 		xplYOkT0f2HN5D4rZwz0AfN9EjM=
@@ -108,10 +112,17 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			x4w9sHCEYC+OYURimHIJLixqoYk=
+			nggby9R2Co4D1wpPh1b5+2UL148=
 			</data>
 			<key>requirement</key>
-			<string>identifier "com.abracode.Find" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = T9NM2ZLDTY</string>
+			<string>cdhash H"9e081bcbd4760a8e03d70a4f8756f9fb650bd78f" or cdhash H"95104288a4a28ab9ff4984d874c789f1de8538b2"</string>
+		</dict>
+		<key>Resources/Assets.car</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			5FZzXZ+1fyG2fMqiiw51j1M71n72CuC+t+AogzkY9go=
+			</data>
 		</dict>
 		<key>Resources/Base.lproj/Find.nib/designable.nib</key>
 		<dict>
@@ -145,7 +156,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			IOEB4OoMXQx3gfvstO3/D0lGih9bpVqq/B8VVAK0YZA=
+			OO0N5n0uEEtdn3GGBUiHh8f9XhEpAChjA/NoBZGrNQM=
+			</data>
+		</dict>
+		<key>Resources/Find.icns</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			apPbWwSEM8QWpf52SwmRL9kg6X7s9mydkA8fvu4Udfc=
 			</data>
 		</dict>
 		<key>Resources/Scripts/find.action.choice.change.sh</key>
@@ -244,13 +262,6 @@
 			<key>hash2</key>
 			<data>
 			ckW3UsAkZjLHB1/SwdAh2aktLgkRFceIgbGt5AFKu3Y=
-			</data>
-		</dict>
-		<key>Resources/app.icns</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			6HbhsKr9ZSV+7bmtjYH2sg1Q7ITq9a3VZyB7AjiEGyE=
 			</data>
 		</dict>
 		<key>Resources/defaults.tsv</key>
