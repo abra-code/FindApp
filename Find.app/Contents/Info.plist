@@ -51,9 +51,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.1.1</string>
+	<string>1.2</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.13</string>
+	<string>11.0</string>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Find.app send AppleEvents to other apps to process found files or directories</string>
 	<key>NSMainNibFile</key>

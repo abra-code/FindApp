@@ -28,6 +28,10 @@
 		<data>
 		QD5vORGbZQj2ZVRrsmzeNiO7iBE=
 		</data>
+		<key>Resources/Credits.rtf</key>
+		<data>
+		/XQbtMD/7Ae0za0B7//XwKsRET0=
+		</data>
 		<key>Resources/Find.icns</key>
 		<data>
 		U60CG7Db39a6qkFxE/HhPwKBwk4=
@@ -96,7 +100,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			fmdMOp4sZl/vre0rQN8HYZqy/00=
+			VYV1mhZCna3/+ZqIUG9Yii5hvbs=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -157,6 +161,13 @@
 			<key>hash2</key>
 			<data>
 			OO0N5n0uEEtdn3GGBUiHh8f9XhEpAChjA/NoBZGrNQM=
+			</data>
+		</dict>
+		<key>Resources/Credits.rtf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			S3OG3+8hJjENEp43ZaB+RoZOMElxh5WhsUDuA0GxhFw=
 			</data>
 		</dict>
 		<key>Resources/Find.icns</key>
@@ -275,7 +286,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			WiZ0rhDWtL8+mbBfhEIGxxKiViRPDIn94A/Nc58+D7I=
+			S1aC/sjDdQRa5dltvH32f70d0QAWiTex1QoiZQ0j3sk=
 			</data>
 			<key>optional</key>
 			<true/>

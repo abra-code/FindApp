@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>Find version 1.1.1</string>
+	<string>Find version 1.2</string>
 	<key>CFBundleName</key>
 	<string>Find</string>
 	<key>NSHumanReadableCopyright</key>
