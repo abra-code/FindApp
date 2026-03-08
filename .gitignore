@@ -3,3 +3,5 @@
 Find.app/Contents/Frameworks
 Find.app/Contents/MacOS/OMCApplet
 Find.app/Contents/_CodeSignature/CodeResources
+Find.app/Contents/_CodeSignature
+Find.app/Contents/MacOS

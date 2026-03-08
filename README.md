@@ -1,4 +1,6 @@
 # Find.app
+![Find Icon](Icon/Find-macOS-256x256@1x.png)
+
 Find.app - macOS GUI applet for "find" command line tool
 
 The applet is built with OMC engine:
