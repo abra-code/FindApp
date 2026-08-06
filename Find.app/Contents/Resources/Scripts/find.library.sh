@@ -354,6 +354,7 @@ append_recent_item()
 	local recent_items_array
 	# the new item might be a duplicate of an existing item in array
 	recent_items_array=( "$recent_item" )
+	local one_item
 	while IFS=$'\n' read -r one_item; do
 		if [ "$recent_item" != "$one_item" ]; then
 			recent_items_array+=("$one_item")
