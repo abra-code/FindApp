@@ -1,0 +1,348 @@
+{
+  "type": "VStack",
+  "properties": {
+    "alignment": "leading",
+    "spacing": 8,
+    "padding": 14,
+    "controlSize": "small",
+    "frame": { "minWidth": 520, "idealWidth": 560, "minHeight": 600, "idealHeight": 620, "maxWidth": "infinity", "maxHeight": "infinity" }
+  },
+  "children": [
+
+    { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+      { "type": "Text", "properties": { "text": "Find In:" } },
+      { "type": "TextField", "id": 1, "properties": {
+        "prompt": "drag a folder here",
+        "actionID": "find.update.output",
+        "onDropTypes": ["public.folder", "public.file-url"],
+        "onDropActionID": "find.location.dropped",
+        "frame": { "maxWidth": "infinity" } } },
+      { "type": "Menu", "id": 1001, "properties": {
+        "buttonStyle": "plain", "cornerRadius": 5, "background": "#00000010",
+        "help": "Recent entries", "frame": { "width": 24, "height": 21 } },
+        "label": { "type": "Image", "properties": { "systemName": "chevron.up.chevron.down" } },
+        "children": [] }
+    ]},
+
+    { "type": "TabView", "id": 10, "properties": { "style": "grouped", "frame": { "maxWidth": "infinity", "minHeight": 182, "idealHeight": 182, "maxHeight": 182 } }, "children": [
+
+      { "type": "Tab", "properties": { "title": "Name" }, "content": {
+        "type": "VStack", "properties": { "alignment": "leading", "spacing": 7, "padding": { "top": 12, "leading": 12, "bottom": 12, "trailing": 12 }, "frame": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "topLeading" } }, "children": [
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Picker", "id": 101, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 106 },
+              "actionID": "find.pattern.choice.change",
+              "options": [
+                { "title": "Name", "tag": "-iname" },
+                { "title": "Full Path", "tag": "-ipath" } ] } },
+            { "type": "TextField", "id": 102, "properties": {
+              "prompt": "text or shell/regex pattern",
+              "actionID": "find.update.output",
+              "frame": { "maxWidth": "infinity" } } },
+            { "type": "Menu", "id": 1102, "properties": {
+        "buttonStyle": "plain", "cornerRadius": 5, "background": "#00000010",
+        "help": "Recent entries", "frame": { "width": 24, "height": 21 } },
+        "label": { "type": "Image", "properties": { "systemName": "chevron.up.chevron.down" } },
+        "children": [] }
+          ]},
+          { "type": "Toggle", "id": 103, "properties": { "title": "Case sensitive", "style": "checkbox", "actionID": "find.update.output" } },
+          { "type": "Toggle", "id": 104, "properties": { "title": "Use regex pattern", "style": "checkbox", "actionID": "find.update.output" } },
+          { "type": "Toggle", "id": 111, "properties": { "title": "Traverse file hierarchies in alphabetical order", "style": "checkbox", "actionID": "find.update.output" } },
+          { "type": "Spacer" }
+        ]}
+      },
+
+      { "type": "Tab", "properties": { "title": "Attributes" }, "content": {
+        "type": "VStack", "properties": { "alignment": "leading", "spacing": 10, "padding": { "top": 12, "leading": 12, "bottom": 12, "trailing": 12 }, "frame": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "topLeading" } }, "children": [
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "File Type:", "frame": { "width": 118, "alignment": "leading" } } },
+            { "type": "Picker", "id": 201, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 148 },
+              "actionID": "find.update.output",
+              "options": [
+                { "title": "Any", "tag": "none" },
+                { "title": "Regular files", "tag": "f" },
+                { "title": "Directories", "tag": "d" },
+                { "title": "Symbolic links", "tag": "l" },
+                { "divider": true },
+                { "title": "Not regular files", "tag": "!f" },
+                { "title": "Not directories", "tag": "!d" },
+                { "title": "Not symbolic links", "tag": "!l" } ] } },
+            { "type": "Spacer" }
+          ]},
+          { "type": "Divider" },
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Extended Attributes:", "frame": { "width": 118, "alignment": "leading" } } },
+            { "type": "TextField", "id": 202, "properties": {
+              "text": "Ignore",
+              "prompt": "extended attribute name",
+              "actionID": "find.update.output",
+              "frame": { "maxWidth": "infinity" } } },
+            { "type": "Menu", "id": 1202, "properties": {
+        "buttonStyle": "plain", "cornerRadius": 5, "background": "#00000010",
+        "help": "Recent entries", "frame": { "width": 24, "height": 21 } },
+        "label": { "type": "Image", "properties": { "systemName": "chevron.up.chevron.down" } },
+        "children": [] }
+          ]},
+          { "type": "Spacer" }
+        ]}
+      },
+
+      { "type": "Tab", "properties": { "title": "Size" }, "content": {
+        "type": "VStack", "properties": { "alignment": "leading", "spacing": 10, "padding": { "top": 12, "leading": 12, "bottom": 12, "trailing": 12 }, "frame": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "topLeading" } }, "children": [
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Picker", "id": 301, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 98 },
+              "actionID": "find.size.choice.change",
+              "options": [
+                { "title": "Ignore", "tag": "none" },
+                { "title": ">", "tag": "+" },
+                { "title": "<", "tag": "-" },
+                { "title": "=", "tag": "=" } ] } },
+            { "type": "TextField", "id": 302, "properties": { "prompt": "e.g. 1000", "actionID": "find.update.output", "frame": { "width": 96 } } },
+            { "type": "Picker", "id": 303, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 86 },
+              "actionID": "find.update.output",
+              "options": [
+                { "title": "Bytes", "tag": "c" },
+                { "title": "kB", "tag": "k" },
+                { "title": "MB", "tag": "M" },
+                { "title": "GB", "tag": "G" },
+                { "title": "TB", "tag": "T" },
+                { "title": "PB", "tag": "P" } ] } },
+            { "type": "Spacer" }
+          ]},
+          { "type": "Divider" },
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Emptiness Test:", "frame": { "width": 100, "alignment": "leading" } } },
+            { "type": "Picker", "id": 304, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 240 },
+              "actionID": "find.update.output",
+              "options": [
+                { "title": "Skip", "tag": "none" },
+                { "title": "Only empty files or directories", "tag": "-empty" },
+                { "title": "Only non-empty files or directories", "tag": "-not -empty" } ] } },
+            { "type": "Spacer" }
+          ]},
+          { "type": "Spacer" }
+        ]}
+      },
+
+      { "type": "Tab", "properties": { "title": "Permissions" }, "content": {
+        "type": "VStack", "properties": { "alignment": "leading", "spacing": 8, "padding": { "top": 12, "leading": 12, "bottom": 12, "trailing": 12 }, "frame": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "topLeading" } }, "children": [
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Picker", "id": 401, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 130 },
+              "actionID": "find.permissions.choice.change",
+              "options": [
+                { "title": "Ignore", "tag": "none" },
+                { "title": "All Bits Set", "tag": "-" },
+                { "title": "Any Bit Set", "tag": "+" },
+                { "title": "Exact Bit Match", "tag": "=" } ] } },
+            { "type": "Spacer" },
+            { "type": "Grid", "id": 402, "properties": { "horizontalSpacing": 10, "verticalSpacing": 4, "alignment": "center" }, "rows": [
+              [
+                { "type": "Text", "properties": { "text": "" } },
+                { "type": "Text", "properties": { "text": "Read" } },
+                { "type": "Text", "properties": { "text": "Write" } },
+                { "type": "Text", "properties": { "text": "Execute" } }
+              ],
+              [
+                { "type": "Text", "properties": { "text": "User", "frame": { "alignment": "trailing" } } },
+                { "type": "Toggle", "id": 411, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } },
+                { "type": "Toggle", "id": 412, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } },
+                { "type": "Toggle", "id": 413, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } }
+              ],
+              [
+                { "type": "Text", "properties": { "text": "Group", "frame": { "alignment": "trailing" } } },
+                { "type": "Toggle", "id": 421, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } },
+                { "type": "Toggle", "id": 422, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } },
+                { "type": "Toggle", "id": 423, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } }
+              ],
+              [
+                { "type": "Text", "properties": { "text": "Other", "frame": { "alignment": "trailing" } } },
+                { "type": "Toggle", "id": 431, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } },
+                { "type": "Toggle", "id": 432, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } },
+                { "type": "Toggle", "id": 433, "properties": { "title": "", "style": "checkbox", "actionID": "find.update.output" } }
+              ]
+            ]},
+            { "type": "Spacer" }
+          ]},
+          { "type": "Spacer" }
+        ]}
+      },
+
+      { "type": "Tab", "properties": { "title": "Time" }, "content": {
+        "type": "VStack", "properties": { "alignment": "leading", "spacing": 6, "padding": { "top": 10, "leading": 12, "bottom": 10, "trailing": 12 }, "frame": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "topLeading" } }, "children": [
+
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Last Access:", "frame": { "width": 112, "alignment": "leading" } } },
+            { "type": "Picker", "id": 511, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 96 },
+              "actionID": "find.time.choice.change",
+              "options": [ { "title": "Any", "tag": "none" }, { "title": "Within", "tag": "-" }, { "title": "Above", "tag": "+" } ] } },
+            { "type": "TextField", "id": 512, "properties": { "prompt": "N", "actionID": "find.update.output", "frame": { "width": 90 } } },
+            { "type": "Picker", "id": 513, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 92 },
+              "actionID": "find.update.output",
+              "options": [ { "title": "seconds", "tag": "s" }, { "title": "minutes", "tag": "m" }, { "title": "hours", "tag": "h" }, { "title": "days", "tag": "d" }, { "title": "weeks", "tag": "w" } ] } },
+            { "type": "Spacer" }
+          ]},
+
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Creation Time:", "frame": { "width": 112, "alignment": "leading" } } },
+            { "type": "Picker", "id": 521, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 96 },
+              "actionID": "find.time.choice.change",
+              "options": [ { "title": "Any", "tag": "none" }, { "title": "Within", "tag": "-" }, { "title": "Above", "tag": "+" } ] } },
+            { "type": "TextField", "id": 522, "properties": { "prompt": "N", "actionID": "find.update.output", "frame": { "width": 90 } } },
+            { "type": "Picker", "id": 523, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 92 },
+              "actionID": "find.update.output",
+              "options": [ { "title": "seconds", "tag": "s" }, { "title": "minutes", "tag": "m" }, { "title": "hours", "tag": "h" }, { "title": "days", "tag": "d" }, { "title": "weeks", "tag": "w" } ] } },
+            { "type": "Spacer" }
+          ]},
+
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Modification Time:", "frame": { "width": 112, "alignment": "leading" } } },
+            { "type": "Picker", "id": 531, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 96 },
+              "actionID": "find.time.choice.change",
+              "options": [ { "title": "Any", "tag": "none" }, { "title": "Within", "tag": "-" }, { "title": "Above", "tag": "+" } ] } },
+            { "type": "TextField", "id": 532, "properties": { "prompt": "N", "actionID": "find.update.output", "frame": { "width": 90 } } },
+            { "type": "Picker", "id": 533, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 92 },
+              "actionID": "find.update.output",
+              "options": [ { "title": "seconds", "tag": "s" }, { "title": "minutes", "tag": "m" }, { "title": "hours", "tag": "h" }, { "title": "days", "tag": "d" }, { "title": "weeks", "tag": "w" } ] } },
+            { "type": "Spacer" }
+          ]},
+
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Last Status Change:", "frame": { "width": 112, "alignment": "leading" } } },
+            { "type": "Picker", "id": 541, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 96 },
+              "actionID": "find.time.choice.change",
+              "options": [ { "title": "Any", "tag": "none" }, { "title": "Within", "tag": "-" }, { "title": "Above", "tag": "+" } ] } },
+            { "type": "TextField", "id": 542, "properties": { "prompt": "N", "actionID": "find.update.output", "frame": { "width": 90 } } },
+            { "type": "Picker", "id": 543, "properties": {
+              "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 92 },
+              "actionID": "find.update.output",
+              "options": [ { "title": "seconds", "tag": "s" }, { "title": "minutes", "tag": "m" }, { "title": "hours", "tag": "h" }, { "title": "days", "tag": "d" }, { "title": "weeks", "tag": "w" } ] } },
+            { "type": "Spacer" }
+          ]},
+
+          { "type": "Spacer" }
+        ]}
+      },
+
+      { "type": "Tab", "properties": { "title": "Advanced" }, "content": {
+        "type": "VStack", "properties": { "alignment": "leading", "spacing": 7, "padding": { "top": 12, "leading": 12, "bottom": 12, "trailing": 12 }, "frame": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "topLeading" } }, "children": [
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "Directory Depth:", "frame": { "width": 106, "alignment": "leading" } } },
+            { "type": "Text", "properties": { "text": "Minimum", "frame": { "width": 62, "alignment": "leading" } } },
+            { "type": "TextField", "id": 611, "properties": { "prompt": "N", "actionID": "find.update.output", "frame": { "width": 96 } } },
+            { "type": "Spacer" }
+          ]},
+          { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+            { "type": "Text", "properties": { "text": "", "frame": { "width": 106, "alignment": "leading" } } },
+            { "type": "Text", "properties": { "text": "Maximum", "frame": { "width": 62, "alignment": "leading" } } },
+            { "type": "TextField", "id": 612, "properties": { "prompt": "N", "actionID": "find.update.output", "frame": { "width": 96 } } },
+            { "type": "Spacer" }
+          ]},
+          { "type": "Spacer" }
+        ]}
+      }
+
+    ]},
+
+    { "type": "GroupBox", "properties": { "title": "Action", "frame": { "maxWidth": "infinity" } }, "children": [
+      { "type": "VStack", "properties": { "alignment": "leading", "spacing": 6, "padding": { "top": 6, "leading": 8, "bottom": 6, "trailing": 8 }, "frame": { "maxWidth": "infinity" } }, "children": [
+        { "type": "HStack", "properties": { "spacing": 8 }, "children": [
+          { "type": "Picker", "id": 801, "properties": {
+            "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 250 },
+            "actionID": "find.action.choice.change",
+            "options": [
+              { "title": "Print", "tag": "-print" },
+              { "title": "List with \"ls\"", "tag": "-ls" },
+              { "title": "Execute tool", "tag": "-exec" },
+              { "title": "Execute tool in found item directory", "tag": "-execdir" },
+              { "title": "Print with print0 (for piping to xargs -0)", "tag": "-print0" },
+              { "title": "Delete ⚠️", "tag": "-delete" } ] } },
+          { "type": "Toggle", "id": 803, "properties": { "title": "Also print", "style": "checkbox", "isOn": true, "actionID": "find.update.output" } },
+          { "type": "Spacer" }
+        ]},
+        { "type": "HStack", "properties": { "spacing": 3 }, "children": [
+          { "type": "TextField", "id": 802, "properties": {
+            "prompt": "tool to execute; use {} as param for found file path; no semicolon",
+            "actionID": "find.update.output",
+            "frame": { "maxWidth": "infinity" } } },
+          { "type": "Menu", "id": 1802, "properties": {
+        "buttonStyle": "plain", "cornerRadius": 5, "background": "#00000010",
+        "help": "Recent entries", "frame": { "width": 24, "height": 21 } },
+        "label": { "type": "Image", "properties": { "systemName": "chevron.up.chevron.down" } },
+        "children": [] }
+        ]}
+      ]}
+    ]},
+
+    { "type": "GroupBox", "properties": { "title": "Output", "frame": { "maxWidth": "infinity" } }, "children": [
+      { "type": "VStack", "properties": { "alignment": "leading", "spacing": 6, "padding": { "top": 6, "leading": 8, "bottom": 6, "trailing": 8 }, "frame": { "maxWidth": "infinity" } }, "children": [
+        { "type": "HStack", "properties": { "spacing": 8 }, "children": [
+          { "type": "Picker", "id": 901, "properties": {
+            "pickerStyle": "menu", "labelsHidden": true, "frame": { "width": 96 },
+            "actionID": "find.output.choice.change",
+            "options": [
+              { "title": "View", "tag": "none" },
+              { "title": "Pipe to", "tag": "|" },
+              { "title": "Save to", "tag": ">" },
+              { "title": "Custom", "tag": "?" } ] } },
+          { "type": "Spacer" }
+        ]},
+        { "type": "HStack", "properties": { "spacing": 3 }, "children": [
+          { "type": "TextField", "id": 902, "properties": {
+            "prompt": "pipe tool, save path or command to execute",
+            "actionID": "find.update.output",
+            "frame": { "maxWidth": "infinity" } } },
+          { "type": "Menu", "id": 1902, "properties": {
+        "buttonStyle": "plain", "cornerRadius": 5, "background": "#00000010",
+        "help": "Recent entries", "frame": { "width": 24, "height": 21 } },
+        "label": { "type": "Image", "properties": { "systemName": "chevron.up.chevron.down" } },
+        "children": [] }
+        ]}
+      ]}
+    ]},
+
+    { "type": "VStack", "properties": { "alignment": "leading", "spacing": 3, "frame": { "maxWidth": "infinity" } }, "children": [
+      { "type": "Text", "properties": { "text": "Command:" } },
+      { "type": "TextEditor", "id": 3, "properties": {
+        "text": "/usr/bin/find",
+        "readOnly": true,
+        "border": { "color": "secondary", "width": 1 },
+        "frame": { "maxWidth": "infinity", "minHeight": 80, "idealHeight": 80, "maxHeight": "infinity" } } }
+    ]},
+
+    { "type": "HStack", "properties": { "spacing": 6 }, "children": [
+      { "type": "Text", "properties": { "text": "Config:" } },
+      { "type": "TextField", "id": 2, "properties": {
+        "prompt": "name a config to save your settings",
+        "frame": { "maxWidth": "infinity" } } },
+      { "type": "Menu", "id": 1002, "properties": {
+        "buttonStyle": "plain", "cornerRadius": 5, "background": "#00000010",
+        "help": "Recent entries", "frame": { "width": 24, "height": 21 } },
+        "label": { "type": "Image", "properties": { "systemName": "chevron.up.chevron.down" } },
+        "children": [] },
+      { "type": "Button", "id": 13, "properties": { "title": "Save", "actionID": "find.save.config" } }
+    ]},
+
+    { "type": "HStack", "properties": { "spacing": 10 }, "children": [
+      { "type": "Spacer" },
+      { "type": "Button", "id": 12, "properties": {
+        "title": "Cancel", "buttonStyle": "bordered", "controlSize": "regular",
+        "keyboardShortcut": { "key": "escape", "modifiers": ["command"] }, "actionID": "omc.dialog.cancel" } },
+      { "type": "Button", "id": 11, "properties": {
+        "title": "Find", "buttonStyle": "borderedProminent", "controlSize": "regular",
+        "keyboardShortcut": { "key": "return", "modifiers": ["command"] }, "actionID": "find.run" } }
+    ]}
+
+  ]
+}

@@ -3,9 +3,9 @@
 source "$OMC_APP_BUNDLE_PATH/Contents/Resources/Scripts/find.library.sh"
 
 command=$(get_command_from_dialog_controls)
-"$dialog" "$OMC_NIB_DLG_GUID" 3 "$command"
+"$dialog" "$window_uuid" 3 "$command"
 
-action_choice="$OMC_NIB_DIALOG_CONTROL_801_VALUE"
+action_choice="$OMC_ACTIONUI_VIEW_801_VALUE"
 if [ "$action_choice" = "-delete" ]; then
 	alert_message=$(echo "You are about to find and delete files. This operation cannot be undone!\n\nUse \"Print\" action first to verify which files will be removed.")
 	"$OMC_OMC_SUPPORT_PATH/alert" --level caution --title "Deleting Files" --ok "Delete" --cancel "Cancel" "$alert_message"
@@ -16,18 +16,18 @@ if [ "$action_choice" = "-delete" ]; then
 	fi
 fi
 
-append_recent_item "recent_locations" 20 "$OMC_NIB_DIALOG_CONTROL_1_VALUE"
-append_recent_item "recent_patterns" 20 "$OMC_NIB_DIALOG_CONTROL_102_VALUE"
+append_recent_item "recent_locations" 20 "$OMC_ACTIONUI_VIEW_1_VALUE"
+append_recent_item "recent_patterns" 20 "$OMC_ACTIONUI_VIEW_102_VALUE"
 if [ "$action_choice" = "-exec" ] || [ "$action_choice" = "-execdir" ]; then
-	append_recent_item "recent_exec_scripts" 20 "$OMC_NIB_DIALOG_CONTROL_802_VALUE"
+	append_recent_item "recent_exec_scripts" 20 "$OMC_ACTIONUI_VIEW_802_VALUE"
 fi
 
-output_choice="$OMC_NIB_DIALOG_CONTROL_901_VALUE"
+output_choice="$OMC_ACTIONUI_VIEW_901_VALUE"
 if [ -n "$output_choice" ]; then
-	append_recent_item "recent_output_scripts" 20 "$OMC_NIB_DIALOG_CONTROL_902_VALUE"
+	append_recent_item "recent_output_scripts" 20 "$OMC_ACTIONUI_VIEW_902_VALUE"
 fi
 
-extended_attribute_value="$OMC_NIB_DIALOG_CONTROL_202_VALUE"
+extended_attribute_value="$OMC_ACTIONUI_VIEW_202_VALUE"
 if [ "$extended_attribute_value" != "Ignore" ]; then
 	# Extended attributes combo is different because we want to keep the predefined menu items
 	while IFS=$'\n' read -r one_item; do
