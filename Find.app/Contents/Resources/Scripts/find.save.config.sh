@@ -48,3 +48,8 @@ done < "$OMC_APP_BUNDLE_PATH/Contents/Resources/defaults.tsv"
 
 # rename last, so an interrupted save leaves the previous config intact
 /bin/mv "$partial_config" "$selected_config"
+
+# The Config dropdown was built from the folder this just wrote into, so it is now a
+# list short. Refreshing is the library's job and this handler deliberately does not
+# source the library, so ask the handler whose job it already is.
+"$OMC_OMC_SUPPORT_PATH/omc_next_command" "$OMC_CURRENT_COMMAND_GUID" "find.update.all.controls"

@@ -9,6 +9,10 @@
 . "$OMCTEST_TESTS/lib.test.find.sh"
 
 section "preconditions"
+# Saving a config refreshes the dropdowns, and a refresh removes the old items by ids
+# minted at run time. Named before the first handler runs: the check is applied at
+# write time, so a declaration further down would come too late.
+declare_combo_item_ids
 check "the applet ships a defaults table" "yes" \
     "$([ -s "$APP_RESOURCES/defaults.tsv" ] && echo yes || echo no)"
 check "which declares the size unit default" "M" "$(declared_default "$SIZE_UNIT_ID")"
@@ -184,6 +188,26 @@ check "including the content pattern, quote and all" "it's a match" \
     "$(ui_value "$CONTENT_ID")"
 check "and the regex switch it was saved with" "true" "$(ui_value "$CONTENT_USE_REGEX_ID")"
 check "and the binary switch turned off"      "false" "$(ui_value "$CONTENT_SKIP_BINARY_ID")"
+
+section "the Config dropdown offers the config that was just saved"
+# The save writes into the folder the dropdown was built from, so without a refresh
+# the one config the list does not offer is the one just made.
+reset_window
+reset_controls_to_app_defaults
+omc_run find.init
+# init chains the same refresh, and this section is asking what the SAVE did.
+chains_reset
+check "the dropdown starts without it" "no" "$(menu_lists "$CONFIG_ID" "just-saved")"
+# Paired with a positive on the same journal: menu_lists says "no" for a menu that was
+# never built at all, so on its own the check above would pass for the wrong reason.
+check "but does offer the configs that exist" "yes" "$(menu_lists "$CONFIG_ID" "nightly")"
+omc_control "$CONFIG_ID" "just-saved"
+omc_run find.save.config
+check "the refresh was asked for" "1" "$(chain_asked find.update.all.controls)"
+omc_drain_chain
+check "and the dropdown now offers it" "yes" "$(menu_lists "$CONFIG_ID" "just-saved")"
+check "without dropping the config saved before it" "yes" \
+    "$(menu_lists "$CONFIG_ID" "nightly")"
 
 section "cumulative: no handler wrote to a view id the window does not declare"
 check "no undeclared ids" "" "$(ui_unknown_writes)"

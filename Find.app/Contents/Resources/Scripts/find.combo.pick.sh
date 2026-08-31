@@ -1,8 +1,8 @@
 #!/bin/sh
 # A combo box is a TextField plus a companion Menu acting as its dropdown. Each menu
 # item is a Button whose id encodes which combo it belongs to and its position in the
-# list find.init built. This copies the chosen item into the field and then runs
-# whatever the field's own action would have run.
+# list the dropdown was last built from. This copies the chosen item into the field
+# and then runs whatever the field's own action would have run.
 
 source "$OMC_APP_BUNDLE_PATH/Contents/Resources/Scripts/find.library.sh"
 
@@ -30,8 +30,8 @@ case " $COMBO_FIELD_IDS " in
 		;;
 esac
 
-# Resolve the position back to text through the snapshot find.init wrote, so a click
-# always yields the line the user is looking at.
+# Resolve the position back to text through the snapshot the last rebuild wrote, so a
+# click always yields the line the user is looking at.
 state_path="$(combo_state_dir)/combo.$field_id"
 if [ ! -f "$state_path" ]; then
 	echo "find.combo.pick: no item list for combo $field_id"

@@ -43,6 +43,13 @@ if [ "$extended_attribute_value" != "Ignore" ]; then
 fi
 
 
+# The dropdowns were built when the window opened, so nothing appended above is in
+# them yet - until now that meant closing the window and reopening it to see the term
+# you just searched for. Refresh before the search rather than after it: a find over a
+# large tree takes a while, and the lists are already correct on disk.
+set_all_combo_picker_options
+
+
 #echo "Running command:"
 #echo "$command"
 eval "$command"

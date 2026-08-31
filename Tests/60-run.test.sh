@@ -29,6 +29,10 @@ arm_run() { # a window ready to search the fixture tree
 }
 
 section "preconditions"
+# Rebuilding a dropdown removes its old items, and a removal targets the item id
+# itself - minted at run time, so no document declares it. Named here, before the
+# first handler runs, because the check is applied at write time.
+declare_combo_item_ids
 build_tree
 check "the fixture tree was built" "3" \
     "$(/usr/bin/find "$ROOT" -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')"

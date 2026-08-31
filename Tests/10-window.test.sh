@@ -4,6 +4,10 @@
 . "$OMCTEST_TESTS/lib.test.find.sh"
 
 section "preconditions"
+# Rebuilding a dropdown removes its old items, and a removal targets the item id
+# itself - minted at run time, so no document declares it. Named here, before the
+# first handler runs, because the check is applied at write time.
+declare_combo_item_ids
 _json_name=$(/usr/bin/plutil -extract COMMAND_LIST.1.ACTIONUI_WINDOW.JSON_NAME raw -o - \
     "$OMCTEST_APP/Contents/Resources/Command.json" 2>/dev/null)
 check "the manifest opens an ActionUI window" "Find" "$_json_name"
@@ -83,12 +87,12 @@ write_recents recent_exec_scripts "/bin/echo {}"
 write_recents recent_output_scripts "/usr/bin/wc -l"
 omc_run find.init
 
-check "the location dropdown offers both recents"  "2" "$(menu_item_count "$LOCATION_ID")"
+check "the location dropdown offers both recents"  "2" "$(menu_live_count "$LOCATION_ID")"
 check "and names the first"                      "yes" "$(menu_offers "$LOCATION_ID" "/one")"
-check "the pattern dropdown offers both recents"   "2" "$(menu_item_count "$PATTERN_ID")"
+check "the pattern dropdown offers both recents"   "2" "$(menu_live_count "$PATTERN_ID")"
 check "and names one of them"                    "yes" "$(menu_offers "$PATTERN_ID" '*.swift')"
-check "the action tool dropdown offers its recent" "1" "$(menu_item_count "$ACTION_TOOL_ID")"
-check "the output dropdown offers its recent"      "1" "$(menu_item_count "$OUTPUT_TARGET_ID")"
+check "the action tool dropdown offers its recent" "1" "$(menu_live_count "$ACTION_TOOL_ID")"
+check "the output dropdown offers its recent"      "1" "$(menu_live_count "$OUTPUT_TARGET_ID")"
 
 check "and what was inserted is valid JSON" "yes" "$(menu_is_valid_json "$LOCATION_ID")"
 
@@ -103,7 +107,7 @@ _shipped=$(/usr/bin/grep -c . "$APP_RESOURCES/extended_attributes.txt")
 check "the shipped list is not empty" "yes" \
     "$([ "$_shipped" -gt 3 ] && echo yes || echo no)"
 check "every shipped attribute plus the recent one is offered" "$(( _shipped + 1 ))" \
-    "$(menu_item_count "$XATTR_ID")"
+    "$(menu_live_count "$XATTR_ID")"
 check "including a shipped one"        "yes" "$(menu_offers "$XATTR_ID" 'com.apple.FinderInfo')"
 check "and the recent one"             "yes" "$(menu_offers "$XATTR_ID" 'com.example.custom')"
 
@@ -111,7 +115,7 @@ section "a duplicate recent would make two options share a tag, so it is dropped
 reset_window
 write_recents recent_patterns "*.txt" "*.txt" "*.md"
 omc_run find.init
-check "the duplicate was collapsed" "2" "$(menu_item_count "$PATTERN_ID")"
+check "the duplicate was collapsed" "2" "$(menu_live_count "$PATTERN_ID")"
 
 section "an item ending in a bracket does not swallow the next one"
 # The dedup sentinel used to be "<item>", so after "a>" it held "<a>>", which
@@ -119,7 +123,7 @@ section "an item ending in a bracket does not swallow the next one"
 reset_window
 write_recents recent_patterns "a>" "a" "b"
 omc_run find.init
-check "all three are offered" "3" "$(menu_item_count "$PATTERN_ID")"
+check "all three are offered" "3" "$(menu_live_count "$PATTERN_ID")"
 check "including the one the old sentinel swallowed" "yes" \
     "$(menu_offers "$PATTERN_ID" 'a')"
 
@@ -130,14 +134,14 @@ reset_window
 write_recents recent_patterns "$(printf 'has\ttab')" "plain"
 omc_run find.init
 check "the inserted menu is still valid JSON" "yes" "$(menu_is_valid_json "$PATTERN_ID")"
-check "and both items survived" "2" "$(menu_item_count "$PATTERN_ID")"
+check "and both items survived" "2" "$(menu_live_count "$PATTERN_ID")"
 
 section "the saved configs are listed in the Config dropdown"
 reset_window
 write_config "nightly" "101	-iname"
 write_config "weekly"  "101	-ipath"
 omc_run find.init
-check "both configs are offered"  "2" "$(menu_item_count "$CONFIG_ID")"
+check "both configs are offered"  "2" "$(menu_live_count "$CONFIG_ID")"
 check "and named"               "yes" "$(menu_offers "$CONFIG_ID" "nightly")"
 
 section "cumulative: no handler wrote to a view id the window does not declare"

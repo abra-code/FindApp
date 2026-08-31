@@ -23,6 +23,13 @@ refresh() {
     omc_run find.update.all.controls
 }
 
+# That refresh rebuilds the dropdowns too, and a rebuild removes items by ids minted
+# at run time. This file never runs find.init, so the first refresh finds no snapshot
+# and sweeps a whole stride of ids per combo - which the check at the end of the file
+# rejects unless they are named here, and named before the first handler runs, because
+# it is applied at write time.
+declare_combo_item_ids
+
 section "the command preview is rewritten on every refresh"
 reset_window
 omc_control "$LOCATION_ID" "/tmp"

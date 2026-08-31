@@ -32,22 +32,12 @@ fi
 
 "$dialog" "$window_uuid" "$LOCATION_ID" "$find_init_dir"
 
-# Each combo box's dropdown is a companion Picker, so its contents are options rather
-# than list items: one omc_set_property per combo, not omc_list_set_items_from_stdin.
-set_combo_picker_options "$LOCATION_ID" "$recent_locations_path"
-set_combo_picker_options "$PATTERN_ID" "$app_support_dir/recent_patterns"
-set_combo_picker_options "$ACTION_TOOL_ID" "$app_support_dir/recent_exec_scripts"
-set_combo_picker_options "$OUTPUT_TARGET_ID" "$app_support_dir/recent_output_scripts"
-
-# Configs are listed from the directory rather than a recents file.
-configs_list=$(/usr/bin/mktemp "${TMPDIR:-/tmp}/find.configs.XXXXXX")
-/bin/ls "$configs_dir" > "$configs_list" 2>/dev/null
-set_combo_picker_options "$CONFIG_ID" "$configs_list"
-/bin/rm -f "$configs_list"
-
-# The extended attributes combo keeps its shipped list and appends the recents to it.
-set_combo_picker_options "$XATTR_ID" \
-	"$extended_attributes_path" \
-	"$app_support_dir/recent_extended_attributes"
+# Each combo box's dropdown is a companion Menu, so its contents are item Buttons
+# rather than list rows: one omc_insert_element per item, not a table load.
+#
+# This is the one handler that runs before any dropdown holds an item, so it is also
+# the only one allowed to read a missing snapshot as "nothing to remove first".
+combo_menus_are_fresh=yes
+set_all_combo_picker_options
 
 "$next_command" "$OMC_CURRENT_COMMAND_GUID" "find.update.all.controls"

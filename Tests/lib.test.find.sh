@@ -308,9 +308,128 @@ print("yes" if found else "no")
 '
 }
 
+# The titles the dropdown is showing NOW, in menu order. menu_item_count above
+# counts inserts, which is the right question for a window that was just built and
+# the wrong one for a window whose dropdowns have been rebuilt since: a refreshed
+# combo has journaled both the old inserts and the removals that took them out, and
+# only replaying the two together says what the user would see on opening the menu.
+menu_live_titles() { # <field-id>
+    OMCTEST_MENU_ID="$(combo_picker_id "$1")"
+    OMCTEST_ITEM_BASE="$(combo_item_id "$1" 0)"
+    OMCTEST_ITEM_STRIDE="$COMBO_ITEM_ID_STRIDE"
+    OMCTEST_JOURNAL="$OMCTEST_UI/journal.tsv"
+    export OMCTEST_MENU_ID OMCTEST_ITEM_BASE OMCTEST_ITEM_STRIDE OMCTEST_JOURNAL
+    /usr/bin/python3 -c '
+import json, os
+menu = os.environ["OMCTEST_MENU_ID"]
+base = int(os.environ["OMCTEST_ITEM_BASE"])
+stride = int(os.environ["OMCTEST_ITEM_STRIDE"])
+live = []
+try:
+    journal = open(os.environ["OMCTEST_JOURNAL"])
+except IOError:
+    journal = []
+for line in journal:
+    parts = line.rstrip("\n").split("\t")
+    if len(parts) < 3:
+        continue
+    target, args = parts[1], parts[2]
+    if target == menu and args.startswith("omc_insert_element "):
+        body = args[len("omc_insert_element "):].rsplit(" children append", 1)[0].strip()
+        try:
+            item = json.loads(body)
+        except ValueError:
+            continue
+        # ActionUI refuses an insert whose id is already live, so a replay that let one
+        # through would report a menu the app can never be in - and would report the
+        # bug of skipping the removals as a menu that merely looks wrong, instead of
+        # one still holding the old list.
+        item_id = item.get("id")
+        if any(pair[0] == item_id for pair in live):
+            continue
+        live.append((item_id, item.get("properties", {}).get("title")))
+    elif args.startswith("omc_remove_element") and target.isdigit():
+        removed = int(target)
+        if base <= removed < base + stride:
+            live = [pair for pair in live if pair[0] != removed]
+for pair in live:
+    print(pair[1])
+'
+}
+
+menu_live_count() { # <field-id>
+    menu_live_titles "$1" | /usr/bin/grep -c . | /usr/bin/tr -d ' '
+}
+
+# The invariant every one of this feature's failure modes breaks: what the menu shows,
+# in order, is what the snapshot says it shows - because the snapshot is what a click
+# is resolved through. Skipping the removals, skipping the snapshot swap, leaving a
+# half-built dropdown in place and sweeping too few ids all break it, and no count
+# assertion sees any of them.
+menu_matches_snapshot() { # <field-id> -> yes | no
+    if [ "$(menu_live_titles "$1")" = "$(combo_snapshot "$1")" ]; then
+        echo yes
+    else
+        echo no
+    fi
+}
+
+menu_lists() { # <field-id> <exact item text> -> yes | no
+    if menu_live_titles "$1" | /usr/bin/grep -q -Fx -- "$2"; then
+        echo yes
+    else
+        echo no
+    fi
+}
+
+# Every item id a dropdown can mint, for the cumulative undeclared-id check.
+#
+# Inserting an item targets the Menu, which the document declares, so building a
+# window needs nothing here. REMOVING one targets the item's own id, which is minted
+# from its position - so any file that lets a dropdown be rebuilt has to say these
+# are expected, and has to say it before the handler runs rather than at the end.
+#
+# The full stride for every combo, not the shorter list each one can usually reach.
+# append_recent_item does cap the recents lists at 20, but two paths reach past that:
+# the Config dropdown is listed from a directory and is capped by nothing but the
+# stride, and a refresh that finds its snapshot gone sweeps the whole range on the
+# chance that the items are still live.
+declare_combo_item_ids() {
+    local field_id
+    local position
+    local base
+    local ids=""
+    for field_id in $COMBO_FIELD_IDS; do
+        base=$(( COMBO_ITEM_ID_BASE + field_id * COMBO_ITEM_ID_STRIDE ))
+        position=0
+        while [ "$position" -lt "$COMBO_ITEM_ID_STRIDE" ]; do
+            ids="$ids $(( base + position ))"
+            position=$(( position + 1 ))
+        done
+    done
+    ui_declare_ids $ids
+}
+
+# Where the applet keeps the list each dropdown was built from - the same file
+# find.combo.pick resolves a click through.
+combo_state_path() { # <field-id>
+    printf '%s' "${TMPDIR:-/tmp}/com.abracode.Find.$OMC_ACTIONUI_WINDOW_UUID/combo.$1"
+}
+
 # What the applet recorded as the list each dropdown was built from.
 combo_snapshot() { # <field-id>
-    /bin/cat "${TMPDIR:-/tmp}/com.abracode.Find.$OMC_ACTIONUI_WINDOW_UUID/combo.$1" 2>/dev/null
+    /bin/cat "$(combo_state_path "$1")" 2>/dev/null
+}
+
+# The marker a rebuild leaves while the menu and the snapshot are allowed to disagree.
+# A handler killed mid-rebuild leaves it behind, which is what tells the next one not
+# to trust an unchanged list.
+combo_is_rebuilding() { # <field-id> -> yes | no
+    if [ -f "$(combo_state_path "$1").rebuilding" ]; then
+        echo yes
+    else
+        echo no
+    fi
 }
 
 # ---------------------------------------------------------------------------

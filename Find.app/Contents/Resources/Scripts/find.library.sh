@@ -56,13 +56,13 @@ OUTPUT_TARGET_ID=902
 # A combo box has no ActionUI equivalent, so each one is a TextField carrying the
 # legacy id plus a companion dropdown at COMBO_PICKER_OFFSET + that id. The dropdown
 # is a Menu rather than a Picker: a menu-style Picker reserves a fixed leading inset
-# for its hidden title, which leaves the chevron visibly off-centre in a button this
-# narrow. A Menu draws only its label, so the glyph centres.
+# for its hidden title, which leaves the chevron visibly off-center in a button this
+# narrow. A Menu draws only its label, so the glyph centers.
 #
-# The JSON declares an empty slot at that id; find.init inserts the whole Menu, with
-# every item, in one call. Each item Button carries an id encoding which combo it
-# belongs to and its position in the list, and find.combo.pick resolves that back to
-# the item text through the snapshot init wrote.
+# The JSON declares the Menu itself, and set_combo_picker_options appends one Button
+# per item. Each item Button carries an id encoding which combo it belongs to and its
+# position in the list, and find.combo.pick resolves that back to the item text
+# through the snapshot the last rebuild wrote.
 COMBO_PICKER_OFFSET=1000
 COMBO_ITEM_ID_BASE=100000
 COMBO_ITEM_ID_STRIDE=100
@@ -578,16 +578,23 @@ append_recent_item()
 		array_count="$max_count"
 	fi
 	
-	/bin/rm -f "$recent_list_path"
+	# Written beside the list and moved into place, rather than truncating the list and
+	# refilling it: the dropdowns are now rebuilt from these files while the window is
+	# open, and a refresh that read one mid-rewrite would offer a truncated list, or
+	# none at all.
+	local recent_list_new="$recent_list_path.new.$$"
+	: > "$recent_list_new"
 
 	# in bash array index starts with 0 but in zsh it starts with 1!
 	# in macOS 10.15 Catalina zsh is the default shell but it does not change /bin/sh
 	# which is still bash
 	local line_index=0
 	while [ "$line_index" -lt "$array_count" ]; do
-		echo "${recent_items_array[$line_index]}" >> "$recent_list_path"
+		echo "${recent_items_array[$line_index]}" >> "$recent_list_new"
 		let "line_index++"
 	done
+
+	/bin/mv "$recent_list_new" "$recent_list_path"
 }
 
 
@@ -629,6 +636,94 @@ combo_item_id_base()
 	echo $(( COMBO_ITEM_ID_BASE + $1 * COMBO_ITEM_ID_STRIDE ))
 }
 
+# Set to "yes" by find.init, the one handler that runs before any dropdown holds an
+# item. Every other caller leaves it empty, and on those paths a missing snapshot
+# cannot be read as "the menu is empty" - see set_combo_picker_options.
+combo_menus_are_fresh=""
+
+# How old an unstamped lock has to be before a waiter treats it as abandoned. Only the
+# instant between creating a lock and stamping it is unstamped, so this is a backstop
+# for a handler killed inside that window, not the usual test - which is whether the
+# process that stamped it still exists.
+COMBO_LOCK_STALE_MINUTES=5
+
+# Which process holds this lock, if it says.
+combo_lock_owner() # <lock-dir> -> pid, or nothing
+{
+	local owner
+	for owner in "$1"/owner.*; do
+		if [ -d "$owner" ]; then
+			printf '%s' "${owner##*/owner.}"
+			return 0
+		fi
+	done
+	return 0
+}
+
+# Hold the lock for one combo's rebuild. A directory, because mkdir either creates it
+# or fails, atomically, where a lock file written with > does neither.
+combo_lock_acquire() # <lock-dir> -> 0 held, 1 gave up
+{
+	local lock_path="$1"
+	local waited=0
+	local owner_pid
+	while ! /bin/mkdir "$lock_path" 2>/dev/null; do
+		# Five seconds, then give up and leave the dropdown to the handler that has the
+		# lock. A refresh dropped this way costs nothing that is not recoverable: the
+		# terms it would have offered are already on disk, and the handler ahead of it
+		# is reading the same files. The caller ignores the status for that reason.
+		if [ "$waited" -ge 50 ]; then
+			return 1
+		fi
+		# A handler killed while holding the lock would otherwise wedge every later
+		# refresh for the life of the window - and the dropdown it left behind is
+		# exactly the one that needs rebuilding. So a lock whose holder is gone is
+		# taken away from it.
+		#
+		# Deciding that and acting on it has to be one step. Two waiters that both
+		# decide the same lock is abandoned both remove it, and the second removes the
+		# lock the first has already retaken - putting two rebuilds in the section at
+		# once, which is the one thing this function exists to prevent. The breaker
+		# serializes the decision, so by the time its next holder looks, a lock that
+		# was just taken is stamped by a live process and no longer a candidate. An
+		# orphaned breaker degrades to "nobody steals", which is a stall, not a
+		# corruption.
+		#
+		# The test is whether the holder still exists, not how old its lock is. Age
+		# says nothing useful here: the holder can be walking a whole stride of
+		# removals one process at a time, and a lock's mtime keeps ageing across a
+		# system sleep or a SIGSTOP while its holder makes no progress at all. Stealing
+		# from a live holder is the corruption this exists to prevent; waiting out a
+		# genuinely dead one only costs a dropdown that stays stale until the next
+		# search.
+		if /bin/mkdir "$lock_path.breaker" 2>/dev/null; then
+			owner_pid="$(combo_lock_owner "$lock_path")"
+			if [ -z "$owner_pid" ]; then
+				if [ -n "$(/usr/bin/find "$lock_path" -maxdepth 0 -mmin +"$COMBO_LOCK_STALE_MINUTES" 2>/dev/null)" ]; then
+					/bin/rm -rf "$lock_path"
+				fi
+			elif ! /bin/kill -0 "$owner_pid" 2>/dev/null; then
+				/bin/rm -rf "$lock_path"
+			fi
+			/bin/rmdir "$lock_path.breaker" 2>/dev/null
+		fi
+		/bin/sleep 0.1
+		waited=$(( waited + 1 ))
+	done
+	/bin/mkdir "$lock_path/owner.$$" 2>/dev/null
+	return 0
+}
+
+# Give the lock up, but only if it is still ours. A handler whose lock was taken from
+# it - because it looked dead, or because its stamp never landed - must not remove the
+# one that replaced it, or a third rebuild walks in on the handler that took it.
+combo_lock_release() # <lock-dir>
+{
+	if [ -d "$1/owner.$$" ]; then
+		/bin/rm -rf "$1"
+	fi
+}
+
 # Fill one combo's dropdown. The Menu itself is declared in the JSON - so the button
 # renders whether or not this runs - and each item is appended as a Button whose id
 # encodes the combo and the item's position. COMBO_ITEM_ID_STRIDE caps a dropdown at
@@ -636,13 +731,35 @@ combo_item_id_base()
 #
 # The item list is also written to a per-window snapshot, so find.combo.pick resolves
 # a position back to text against the list the user is actually looking at.
+#
+# Safe to call again on a window that is already open, which is what lets a search
+# put its own terms in the dropdowns without the user closing and reopening. The new
+# list is built first and compared with the snapshot: an unchanged dropdown is left
+# alone entirely, and a changed one has its old items removed before the new ones go
+# in. Removing them is not optional - the ids come from the position, and ActionUI
+# refuses an insert whose id is already live, so appending over the old items would
+# quietly leave the stale list on screen.
 set_combo_picker_options()
 {
 	local field_id="$1"
 	shift
 
 	local menu_id=$(( field_id + COMBO_PICKER_OFFSET ))
-	local state_path="$(combo_state_dir)/combo.$field_id"
+	local state_dir="$(combo_state_dir)"
+	local state_path="$state_dir/combo.$field_id"
+	# Built alongside the snapshot rather than over it: until the dropdown has really
+	# been rebuilt, the snapshot has to keep describing what is on screen, because
+	# find.combo.pick is what resolves a click through it.
+	# One per process: two handlers refreshing the same combo at once - a second Find
+	# pressed while the first is still going - would otherwise interleave their appends
+	# into a list that is neither.
+	local pending_path="$state_path.pending.$$"
+	# Present only while the menu and the snapshot are allowed to disagree. A handler
+	# killed mid-rebuild leaves it behind, and the next call takes that as "rebuild
+	# whatever the comparison says" - otherwise a half-inserted dropdown compares equal
+	# to its own snapshot for ever and is never repaired.
+	local dirty_path="$state_path.rebuilding"
+	local lock_path="$state_path.lock"
 	local base=$(combo_item_id_base "$field_id")
 	local index=0
 	local seen_items=""
@@ -650,8 +767,8 @@ set_combo_picker_options()
 	local one_item
 	local escaped
 
-	/bin/mkdir -p "$(combo_state_dir)"
-	: > "$state_path"
+	/bin/mkdir -p "$state_dir"
+	: > "$pending_path"
 
 	for list_path in "$@"; do
 		if [ ! -f "$list_path" ]; then
@@ -670,13 +787,117 @@ set_combo_picker_options()
 			fi
 			seen_items="$seen_items
 $one_item"
-			printf '%s\n' "$one_item" >> "$state_path"
+			printf '%s\n' "$one_item" >> "$pending_path"
+			index=$(( index + 1 ))
+		done < "$list_path"
+	done
+
+	# Everything from the comparison to the last insert is one rebuild, and two of them
+	# interleaved can leave an item id live whose snapshot line says something else
+	# entirely - which is the one outcome the whole ordering exists to prevent.
+	if ! combo_lock_acquire "$lock_path"; then
+		/bin/rm -f "$pending_path"
+		return 1
+	fi
+
+	if [ ! -f "$dirty_path" ] && [ -f "$state_path" ] && /usr/bin/cmp -s "$state_path" "$pending_path"; then
+		/bin/rm -f "$pending_path"
+		combo_lock_release "$lock_path"
+		return 0
+	fi
+
+	: > "$dirty_path"
+
+	# The snapshot is also the record of what the menu is holding, so its line count
+	# is how many item ids are live. Nothing else knows: the ids are derived from a
+	# position, not stored, and this handler may not be the one that inserted them.
+	local old_count=0
+	if [ -f "$state_path" ]; then
+		old_count=$(/usr/bin/awk 'END { print NR }' "$state_path")
+	elif [ "$combo_menus_are_fresh" != "yes" ]; then
+		# No snapshot, on a window that already has its dropdowns: the state directory
+		# lives in TMPDIR, which the system sweeps out from under a window left open
+		# for days. Assume every id the combo can mint is live rather than none of
+		# them - an insert whose id is already taken is refused, and refused silently,
+		# which would leave the old list on screen under a snapshot describing the new
+		# one. Removing an id that is not live costs a no-op.
+		old_count="$COMBO_ITEM_ID_STRIDE"
+	fi
+	# Same guard the insert loop carries, and it matters more here: an id past the
+	# stride belongs to the next combo, and removing one would take a live item out of
+	# a dropdown this call has no business touching. Fields 1 and 2 are the only
+	# adjacent pair in the id map, so that is Location reaching into Config.
+	if [ "$old_count" -gt "$COMBO_ITEM_ID_STRIDE" ]; then
+		old_count="$COMBO_ITEM_ID_STRIDE"
+	fi
+	local old_index=0
+	while [ "$old_index" -lt "$old_count" ]; do
+		"$dialog" "$window_uuid" "$(( base + old_index ))" omc_remove_element
+		old_index=$(( old_index + 1 ))
+	done
+
+	/bin/mv "$pending_path" "$state_path"
+
+	# Read back from the snapshot, not from the pending file: if the mv failed, the
+	# snapshot still describes the old list and re-inserting that leaves menu and
+	# snapshot agreeing, which is what find.combo.pick needs.
+	index=0
+	while IFS= read -r one_item || [ -n "$one_item" ]; do
+		if [ -z "$one_item" ]; then
+			continue
+		fi
+		# The build loop above caps the list, so this can only bite on a snapshot from
+		# somewhere else - but an item minted past the stride lands in the next combo's
+		# id range, and a click on it would resolve against the wrong field entirely.
+		if [ "$index" -ge "$COMBO_ITEM_ID_STRIDE" ]; then
+			break
+		fi
 		escaped=$(json_escape "$one_item")
 		"$dialog" "$window_uuid" "$menu_id" omc_insert_element \
 			"$(printf '{"type":"Button","id":%s,"properties":{"title":"%s","actionID":"find.combo.pick"}}' \
 				"$(( base + index ))" "$escaped")" \
 			children append
 		index=$(( index + 1 ))
-		done < "$list_path"
-	done
+	done < "$state_path"
+
+	/bin/rm -f "$dirty_path"
+	# Not the last statement on purpose. The release is a no-op when this handler's
+	# lock was taken from it, and that is not the same answer as the "gave up without
+	# touching anything" that return 1 means above - this rebuild happened.
+	combo_lock_release "$lock_path"
+	return 0
+}
+
+# Fill every combo's dropdown from the list behind it. find.init builds them here
+# when the window opens, and find.run comes back through the same function after
+# recording what was just searched for - each dropdown that did not change is left
+# untouched, so the second call costs nothing the user can see.
+set_all_combo_picker_options()
+{
+	set_combo_picker_options "$LOCATION_ID" "$app_support_dir/recent_locations"
+	set_combo_picker_options "$PATTERN_ID" "$app_support_dir/recent_patterns"
+	set_combo_picker_options "$CONTENT_ID" "$app_support_dir/recent_content_patterns"
+	set_combo_picker_options "$ACTION_TOOL_ID" "$app_support_dir/recent_exec_scripts"
+	set_combo_picker_options "$OUTPUT_TARGET_ID" "$app_support_dir/recent_output_scripts"
+
+	# Configs are listed from the directory rather than a recents file. Skipped rather
+	# than attempted if the temporary file cannot be made: an unreadable list is an
+	# empty list, and an empty list here would take every config out of the dropdown.
+	local configs_list
+	configs_list=$(/usr/bin/mktemp "${TMPDIR:-/tmp}/find.configs.XXXXXX")
+	if [ -n "$configs_list" ]; then
+		# The listing has to have worked, for the same reason: an ls that failed writes
+		# nothing, and refreshing from nothing would take every config out of the menu.
+		# A directory that does not exist yet is not a failure - there are no configs
+		# to offer, and an empty dropdown is the right answer.
+		if /bin/ls "$configs_dir" > "$configs_list" 2>/dev/null || [ ! -d "$configs_dir" ]; then
+			set_combo_picker_options "$CONFIG_ID" "$configs_list"
+		fi
+		/bin/rm -f "$configs_list"
+	fi
+
+	# The extended attributes combo keeps its shipped list and appends the recents to it.
+	set_combo_picker_options "$XATTR_ID" \
+		"$extended_attributes_path" \
+		"$app_support_dir/recent_extended_attributes"
 }
