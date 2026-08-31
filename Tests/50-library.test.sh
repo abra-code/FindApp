@@ -447,6 +447,332 @@ omc_control "$XATTR_ID" com.apple.FinderInfo
 check "a name is -xattrname" "/usr/bin/find -x '$ROOT' -xattrname 'com.apple.FinderInfo' -print" \
     "$(find_command)"
 
+# ---------------------------------------------------------------------------
+# Content search
+# ---------------------------------------------------------------------------
+# A tree of its own, because the sections above assert exact file counts against
+# build_tree and adding files to it would move every one of them. Every name here is
+# deliberately unrelated to what is inside the file, so a content match cannot be
+# passing on the strength of the name filter.
+CROOT="$OMCTEST_WORK/content"
+
+build_content_tree() {
+    /bin/rm -rf "$CROOT"
+    /bin/mkdir -p "$CROOT/sub"
+    printf 'the needle is nested\n' > "$CROOT/sub/nested.txt"
+    printf 'the needle is in here\n'  > "$CROOT/aaa.txt"
+    printf 'nothing of interest\n'    > "$CROOT/bbb.txt"
+    printf 'a NEEDLE, shouting\n'     > "$CROOT/ccc.txt"
+    printf 'version 42 shipped\n'     > "$CROOT/ddd.txt"
+    printf 'abc\n'                    > "$CROOT/eee.txt"
+    printf 'a.c\n'                    > "$CROOT/fff.txt"
+    # NUL bytes are what make grep call a file binary - control characters alone do
+    # not, so \001\002 here would leave the -I section asserting nothing.
+    /usr/bin/printf 'needle\000\000tail\n' > "$CROOT/ggg.bin"
+}
+
+arm_content() {
+    reset_controls_to_app_defaults
+    build_content_tree
+    omc_control "$LOCATION_ID" "$CROOT"
+}
+
+# The same, but bounded. check() does not abort a file, so a regression that makes the
+# grep block would stall the whole run with no failure line naming the cause - this
+# turns that into an ordinary failed comparison.
+#
+# The output goes to a FILE, never a pipe. alarm survives exec and does kill the shell
+# on time, but the grep it left behind is still blocked on the pipe and still holds the
+# write end, so a "| sort" here would go on waiting long after the alarm fired. Writing
+# to a file lets this return at the deadline and read back whatever was produced.
+content_hits_bounded() { # <seconds>
+    local bounded_out="$OMCTEST_WORK/bounded-hits"
+    local bounded_rc
+    /bin/rm -f "$bounded_out" "$OMCTEST_WORK/bounded-timedout"
+    /usr/bin/perl -e 'alarm shift; exec @ARGV' "$1" \
+        /bin/sh -c "$(find_command)" > "$bounded_out" 2>/dev/null
+    bounded_rc=$?
+    # Death by signal is the deadline. Record it in a file, not a variable: this runs
+    # inside a command substitution, so a variable would not survive back to the caller.
+    if [ "$bounded_rc" -ge 128 ]; then
+        : > "$OMCTEST_WORK/bounded-timedout"
+    fi
+    /usr/bin/sort "$bounded_out" | /usr/bin/sed "s|^$CROOT/||" | /usr/bin/tr '\n' ' ' \
+        | /usr/bin/sed 's/ $//'
+}
+
+# Basenames of what the built command finds, so the assertions read as file lists.
+content_hits() {
+    find_run_built_command_output | /usr/bin/sed "s|^$CROOT/||" | /usr/bin/tr '\n' ' ' \
+        | /usr/bin/sed 's/ $//'
+}
+
+section "with no content pattern the command carries no content test at all"
+arm_content
+check "no -exec"  "no" "$(find_has_token -exec)"
+check "no grep"   "no" "$(find_has_token /usr/bin/grep)"
+check "the command is untouched" "/usr/bin/find -x '$CROOT' -print" "$(find_command)"
+
+section "a content pattern becomes an -exec condition, placed after every other test"
+# -exec is find's own idiom for a test: the command's exit status is the result, so
+# the match filters like -size does instead of consuming the action.
+arm_content
+omc_control "$CONTENT_ID" "needle"
+check "the whole command" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -print" \
+    "$(find_command)"
+check "find accepts it" "0" "$(find_run_built_command)"
+
+section "and it really filters on content rather than on the name"
+# Every filename in this tree is unrelated to its contents, so a name-based
+# implementation would return all of them or none.
+arm_content
+omc_control "$CONTENT_ID" "needle"
+check "only the files that contain it" "aaa.txt ccc.txt sub/nested.txt" "$(content_hits)"
+
+section "the content match is case-insensitive by default, like the name match"
+arm_content
+omc_control "$CONTENT_ID" "NEEDLE"
+check "either case matches" "aaa.txt ccc.txt sub/nested.txt" "$(content_hits)"
+omc_control "$CONTENT_CASE_SENSITIVE_ID" true
+check "until case sensitivity is asked for" "ccc.txt" "$(content_hits)"
+check "and then -i is gone" "no" "$(find_has_token -i)"
+
+section "unchecked means literally literal, not a bare grep's BRE"
+# The trap this section exists for: plain grep is BRE, where "." is still a
+# metacharacter, so "a.c" would match "abc" and the unchecked box would be a lie.
+arm_content
+omc_control "$CONTENT_ID" 'a.c'
+check "the dot is just a dot" "fff.txt" "$(content_hits)"
+check "which is -F"           "yes" "$(find_has_token -F)"
+check "and never -E"           "no" "$(find_has_token -E)"
+
+section "and checked means extended regex"
+omc_control "$CONTENT_USE_REGEX_ID" true
+check "the dot matches any character" "eee.txt fff.txt" "$(content_hits)"
+check "which is -E" "yes" "$(find_has_token -E)"
+check "and not -F"   "no" "$(find_has_token -F)"
+# A pattern only ERE can express, so this cannot pass on -F semantics by accident.
+arm_content
+omc_control "$CONTENT_USE_REGEX_ID" true
+omc_control "$CONTENT_ID" 'version [0-9]+'
+check "a real regex works" "ddd.txt" "$(content_hits)"
+
+section "skipping binary files is on out of the box, and can be turned off"
+arm_content
+omc_control "$CONTENT_ID" "needle"
+check "the binary file is not offered" "aaa.txt ccc.txt sub/nested.txt" "$(content_hits)"
+check "because of -I"            "yes" "$(find_has_token -I)"
+omc_control "$CONTENT_SKIP_BINARY_ID" false
+check "unchecked, it matches too" "aaa.txt ccc.txt ggg.bin sub/nested.txt" "$(content_hits)"
+check "and -I is gone"            "no" "$(find_has_token -I)"
+
+section "a blank line in the pattern is not an alternative that matches everything"
+# grep reads each line of -e as its own pattern, so one blank line among them matches
+# every file - "find the files containing X" becomes "list everything", silently.
+arm_content
+omc_control "$CONTENT_ID" "$(printf 'needle\n\nzzz-no-such-text')"
+check "only the real matches come back" "aaa.txt ccc.txt sub/nested.txt" "$(content_hits)"
+# Blank, not merely empty: a space-only line is an alternative that matches any file
+# containing a space, which is very nearly everything.
+arm_content
+omc_control "$CONTENT_ID" "$(printf 'needle\n \nzzz-no-such-text')"
+check "a space-only line counts as blank" "aaa.txt ccc.txt sub/nested.txt" \
+    "$(content_hits)"
+# The CRLF form of the same paste. The blank line goes, but the CR that LF left on the
+# line before it does not, so "needle\r" no longer matches a Unix file and the search
+# comes back empty. That is the safe direction to be wrong in - too strict rather than
+# matching every file - and it is the behavior, so it is what this pins.
+arm_content
+omc_control "$CONTENT_ID" "$(printf 'needle\r\n\r\nzzz-no-such-text')"
+check "a CRLF paste does not match everything" "" "$(content_hits)"
+# The control that gives that check its meaning: without the blank line dropped, the
+# empty alternative would have returned the whole tree rather than nothing.
+check "and specifically is not the whole tree" "no" \
+    "$([ "$(content_hits)" = "aaa.txt bbb.txt ccc.txt ddd.txt eee.txt fff.txt ggg.bin sub/nested.txt" ] \
+        && echo yes || echo no)"
+# But a single line is the pattern the user meant, whatever is in it - there are no
+# alternatives to be empty, so a deliberate search for whitespace still works.
+arm_content
+printf 'has\ttab\n' > "$CROOT/iii.txt"
+omc_control "$CONTENT_ID" "$(printf '\t')"
+check "a lone whitespace pattern is preserved" "iii.txt" "$(content_hits)"
+
+section "a pattern that reduces to nothing emits no content test, and no stray -print"
+# The -print fallback keys off what was actually emitted, not off the raw field: if it
+# keyed off the field, this state would append a -print with no content test in front
+# of it. Reachable only if a newline can get into the field at all, which is exactly
+# why the guard above exists.
+# A value of nothing but newlines cannot be used here - it reaches the handler as the
+# empty string, so it would exercise the same path an untouched field does and prove
+# nothing. Whitespace-only lines are the discriminating case: non-empty on the way in,
+# nothing at all once the blank lines are dropped.
+arm_content
+omc_control "$CONTENT_ID" "$(printf ' \n \n ')"
+omc_control "$ACTION_KIND_ID" -exec
+omc_control "$ACTION_TOOL_ID" ""
+omc_control "$ALSO_PRINT_ID" false
+check "the field really did arrive non-empty" "yes" \
+    "$([ -n "$OMC_ACTIONUI_VIEW_701_VALUE" ] && echo yes || echo no)"
+check "no content test" "no" "$(find_has_token /usr/bin/grep)"
+check "and no -print to go with it" "no" "$(find_has_token -print)"
+check "which is the bare search" "/usr/bin/find -x '$CROOT'" "$(find_command)"
+
+section "the content test never runs grep on something that cannot be read"
+# grep blocks in read() on a FIFO and never returns, and macOS really does put them
+# in a home directory, so without -type f a content search of $HOME hangs with no
+# error at all. The mkfifo below is that hang, made reproducible.
+arm_content
+/usr/bin/mkfifo "$CROOT/a-pipe" 2>/dev/null
+# Without this the section is green while asserting nothing: a failed mkfifo leaves an
+# ordinary tree that every check below passes on.
+check "the pipe is really there" "yes" \
+    "$([ -p "$CROOT/a-pipe" ] && echo yes || echo no)"
+omc_control "$CONTENT_ID" "needle"
+# The whole command, not a token: find_has_token -type is an element match on "-type"
+# alone, so it answers yes to "! -type d" too - and "! -type d" still hangs. That is
+# the natural simplification someone reaches for to remove the -type d contradiction
+# the next section pins, so the check guarding against it has to tell the two apart.
+check "-type f guards the grep" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -print" \
+    "$(find_command)"
+check "and the search completes rather than hanging" "aaa.txt ccc.txt sub/nested.txt" \
+    "$(content_hits_bounded 20)"
+# Only when the search above really did time out. A grep is then still blocked opening
+# the pipe and would outlive the whole run, and opening the write end releases it.
+#
+# Strictly conditional, and bounded, because the reverse is just as bad: on the passing
+# path -type f means nothing ever opens the pipe, so this open would find no reader and
+# block forever - and unlinking a FIFO does not wake a blocked open, so an unconditional
+# background version leaks one immortal shell per run.
+if [ -f "$OMCTEST_WORK/bounded-timedout" ]; then
+    /usr/bin/perl -e 'alarm 5; open(my $fh, ">", $ARGV[0]);' "$CROOT/a-pipe" 2>/dev/null
+    /bin/rm -f "$OMCTEST_WORK/bounded-timedout"
+fi
+/bin/rm -f "$CROOT/a-pipe"
+
+section "asking for directories and for contents finds nothing, rather than hanging"
+# The two conditions contradict each other - a directory has no contents to match -
+# and an empty result is the honest answer. Pinned so the -type f guard above cannot
+# be quietly dropped to make this case "work".
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$FILE_TYPE_ID" d
+check "nothing matches" "" "$(content_hits)"
+# "Not regular files" is the same contradiction spelled the other way round.
+omc_control "$FILE_TYPE_ID" '!f'
+check "nor for the negated form" "" "$(content_hits)"
+# And symbolic links, where grep would otherwise read through to the target - which is
+# what would reopen the hang, since a link can point at a FIFO.
+omc_control "$FILE_TYPE_ID" l
+check "nor for symbolic links" "" "$(content_hits)"
+# And the picker's own "Regular files" leaves no duplicate token behind.
+omc_control "$FILE_TYPE_ID" f
+check "while asking for files emits -type f once" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -print" \
+    "$(find_command)"
+
+section "a content search still prints when the action slot emits nothing"
+# find only supplies an implicit -print when the expression has no -exec of its own,
+# and the content test is an -exec. Choosing "Execute tool", leaving the tool empty
+# and unticking "Also print" is a reachable state, and it used to turn a content
+# search into a command that printed nothing at all.
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$ACTION_KIND_ID" -exec
+omc_control "$ACTION_TOOL_ID" ""
+omc_control "$ALSO_PRINT_ID" false
+check "there is still a -print" "yes" "$(find_has_token -print)"
+check "and the matches really come out" "aaa.txt ccc.txt sub/nested.txt" "$(content_hits)"
+# Negative control: with no content pattern the same state emits no -print, because
+# find's own implicit one is still in force and adding a second would be noise.
+arm_content
+omc_control "$ACTION_KIND_ID" -exec
+omc_control "$ACTION_TOOL_ID" ""
+omc_control "$ALSO_PRINT_ID" false
+check "which is not added when there is no content test" "no" "$(find_has_token -print)"
+check "because find still prints by itself there" "10" \
+    "$(find_run_built_command_output | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
+
+section "the content test in the combinations the emission order could break"
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$ACTION_KIND_ID" -print0
+check "with -print0" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -print0" \
+    "$(find_command)"
+check "which find accepts" "0" "$(find_run_built_command)"
+
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$ACTION_KIND_ID" -exec
+omc_control "$ACTION_TOOL_ID" "/bin/echo {}"
+omc_control "$ALSO_PRINT_ID" false
+check "beside a second -exec whose tool also uses {}" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -exec /bin/echo {} ';'" \
+    "$(find_command)"
+check "and both {} resolve independently" "aaa.txt ccc.txt sub/nested.txt" "$(content_hits)"
+
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$CONTENT_CASE_SENSITIVE_ID" true
+check "and case-sensitive drops only the -i" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -F -I -e 'needle' {} ';' -print" \
+    "$(find_command)"
+
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$OUTPUT_KIND_ID" "|"
+omc_control "$OUTPUT_TARGET_ID" "/usr/bin/wc -l"
+check "and the output pipe still hangs off the end" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -print | /usr/bin/wc -l" \
+    "$(find_command)"
+check "which counts the matches" "3" \
+    "$(find_run_built_command_output | /usr/bin/tr -d ' ')"
+
+section "the content test composes with an action instead of replacing one"
+# The reason for making this a test rather than an action: "delete every file whose
+# contents match" stays one find command.
+arm_content
+omc_control "$CONTENT_ID" "needle"
+omc_control "$ACTION_KIND_ID" -delete
+omc_control "$ALSO_PRINT_ID" false
+check "the action still follows the test" \
+    "/usr/bin/find -x '$CROOT' -type f -exec /usr/bin/grep -q -i -F -I -e 'needle' {} ';' -delete" \
+    "$(find_command)"
+find_run_built_command >/dev/null
+check "only the matching files were deleted" "bbb.txt ddd.txt eee.txt fff.txt ggg.bin" \
+    "$(/usr/bin/find "$CROOT" -type f | /usr/bin/sed "s|^$CROOT/||" | /usr/bin/sort \
+        | /usr/bin/tr '\n' ' ' | /usr/bin/sed 's/ $//')"
+
+section "and it narrows the name filter rather than replacing it"
+arm_content
+omc_control "$PATTERN_ID" 'aaa*'
+omc_control "$CONTENT_ID" "needle"
+check "both conditions have to hold" "aaa.txt" "$(content_hits)"
+omc_control "$CONTENT_ID" "nothing of interest"
+check "a name hit with the wrong contents is dropped" "" "$(content_hits)"
+
+section "a content pattern is quoted, so it cannot break out into the shell"
+# Control 701 feeds the same eval every other field does.
+arm_content
+_canary="$OMCTEST_WORK/content-canary"
+/bin/rm -f "$_canary"
+omc_control "$CONTENT_ID" "x'; /usr/bin/touch $_canary; echo '"
+find_run_built_command >/dev/null
+check_absent "the injected command did not run" "$_canary"
+# Positive control: the pattern really did reach the command, quoted, rather than the
+# whole content test having been dropped - which would pass the check above for the
+# wrong reason.
+check "the content test was still built" "yes" "$(find_has_token /usr/bin/grep)"
+check "with the quote escaped, not honored" "1" \
+    "$(find_command | /usr/bin/grep -c "'\\\\''")"
+# A pattern full of shell metacharacters survives as a literal search term.
+arm_content
+printf 'cost is $100 (approx)\n' > "$CROOT/hhh.txt"
+omc_control "$CONTENT_ID" 'cost is $100 (approx)'
+check "metacharacters are searched for, not interpreted" "hhh.txt" "$(content_hits)"
+
 section "the action picker chooses the primary, and -exec carries its tool"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"

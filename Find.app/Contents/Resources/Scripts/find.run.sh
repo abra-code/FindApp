@@ -18,6 +18,7 @@ fi
 
 append_recent_item "recent_locations" 20 "$OMC_ACTIONUI_VIEW_1_VALUE"
 append_recent_item "recent_patterns" 20 "$OMC_ACTIONUI_VIEW_102_VALUE"
+append_recent_item "recent_content_patterns" 20 "$OMC_ACTIONUI_VIEW_701_VALUE"
 if [ "$action_choice" = "-exec" ] || [ "$action_choice" = "-execdir" ]; then
 	append_recent_item "recent_exec_scripts" 20 "$OMC_ACTIONUI_VIEW_802_VALUE"
 fi

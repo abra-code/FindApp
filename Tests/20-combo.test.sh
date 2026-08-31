@@ -17,6 +17,7 @@ seed_combo() { # <field-id> <item> ...
     case "$field_id" in
         "$LOCATION_ID")      write_recents recent_locations "$@" ;;
         "$PATTERN_ID")       write_recents recent_patterns "$@" ;;
+        "$CONTENT_ID")       write_recents recent_content_patterns "$@" ;;
         "$XATTR_ID")         write_recents recent_extended_attributes "$@" ;;
         "$ACTION_TOOL_ID")   write_recents recent_exec_scripts "$@" ;;
         "$OUTPUT_TARGET_ID") write_recents recent_output_scripts "$@" ;;
@@ -43,7 +44,7 @@ pick_item() { # <field-id> <exact item text>
 }
 
 section "preconditions"
-check "the library names six combo boxes" "6" \
+check "the library names seven combo boxes" "7" \
     "$(printf '%s\n' $COMBO_FIELD_IDS | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
 # and the window really declares an insertion slot for each of them, so the list
 # above cannot drift away from the document it describes.

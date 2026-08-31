@@ -134,6 +134,10 @@ check "while a plain text value is untouched" "*.c" "$(ui_value "$PATTERN_ID")"
 # control has to come back on rather than at the Toggle's own false.
 check "and a control the config never heard of gets its default" "true" \
     "$(ui_value "$STAY_ON_VOLUME_ID")"
+check "the content pattern comes back empty rather than stale" "" \
+    "$(ui_value "$CONTENT_ID")"
+check "and skipping binaries is on, as the app ships it" "true" \
+    "$(ui_value "$CONTENT_SKIP_BINARY_ID")"
 
 section "a saved config reloads into the same command"
 # Note this proves the two halves agree, not that either uses ActionUI's spellings:
@@ -151,7 +155,14 @@ omc_control "$SIZE_COMPARE_ID" +
 omc_control "$SIZE_NUMBER_ID" 4
 omc_control "$SIZE_UNIT_ID" k
 omc_control "$ACTION_KIND_ID" -ls
+# The content controls too, and with a pattern carrying a quote and a space: it is
+# the one saved value that goes back out through shell_quote into an eval.
+omc_control "$CONTENT_ID" "it's a match"
+omc_control "$CONTENT_USE_REGEX_ID" true
+omc_control "$CONTENT_SKIP_BINARY_ID" false
 _expected="$(find_command)"
+check "the saved command really carries the content test" "yes" \
+    "$(find_has_token /usr/bin/grep)"
 check "the command under test is not the trivial one" "yes" \
     "$([ "$_expected" != "/usr/bin/find -x '/tmp' -print" ] && echo yes || echo no)"
 omc_run find.save.config
@@ -169,6 +180,10 @@ for _line in $(/usr/bin/awk -F'\t' '{ print $1 }' "$(configs_dir)/roundtrip"); d
     omc_control "$_line" "$(ui_value "$_line")"
 done
 check "the reloaded settings rebuild the same command" "$_expected" "$(find_command)"
+check "including the content pattern, quote and all" "it's a match" \
+    "$(ui_value "$CONTENT_ID")"
+check "and the regex switch it was saved with" "true" "$(ui_value "$CONTENT_USE_REGEX_ID")"
+check "and the binary switch turned off"      "false" "$(ui_value "$CONTENT_SKIP_BINARY_ID")"
 
 section "cumulative: no handler wrote to a view id the window does not declare"
 check "no undeclared ids" "" "$(ui_unknown_writes)"

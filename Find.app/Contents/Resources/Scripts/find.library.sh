@@ -40,6 +40,13 @@ PERMISSIONS_COMPARE_ID=401
 PERMISSIONS_GRID_ID=402
 DEPTH_MIN_ID=611
 DEPTH_MAX_ID=612
+# The Content tab. Its 7xx block was added after 1xx-6xx were fixed, so the number
+# does not track the tab's position the way the earlier blocks do - the tab sits
+# second, beside Name. Renumbering the others would break every saved config.
+CONTENT_ID=701
+CONTENT_CASE_SENSITIVE_ID=702
+CONTENT_USE_REGEX_ID=703
+CONTENT_SKIP_BINARY_ID=704
 ACTION_KIND_ID=801
 ACTION_TOOL_ID=802
 ALSO_PRINT_ID=803
@@ -59,7 +66,7 @@ OUTPUT_TARGET_ID=902
 COMBO_PICKER_OFFSET=1000
 COMBO_ITEM_ID_BASE=100000
 COMBO_ITEM_ID_STRIDE=100
-COMBO_FIELD_IDS="$LOCATION_ID $CONFIG_ID $PATTERN_ID $XATTR_ID $ACTION_TOOL_ID $OUTPUT_TARGET_ID"
+COMBO_FIELD_IDS="$LOCATION_ID $CONFIG_ID $PATTERN_ID $CONTENT_ID $XATTR_ID $ACTION_TOOL_ID $OUTPUT_TARGET_ID"
 
 # ActionUI refuses a Picker option whose tag is empty, so every menu item that
 # meant "no choice" in the nib carries this sentinel tag instead.
@@ -68,7 +75,7 @@ SENTINEL_PICKER_IDS="$FILE_TYPE_ID $SIZE_COMPARE_ID $EMPTINESS_ID $PERMISSIONS_C
 
 # ActionUI Toggles carry a Bool, so they arrive as "true"/"false" where the nib
 # checkboxes arrived as "1"/"0".
-TOGGLE_IDS="$CASE_SENSITIVE_ID $USE_REGEX_ID $ALPHABETICAL_ID $STAY_ON_VOLUME_ID 411 412 413 421 422 423 431 432 433 $ALSO_PRINT_ID"
+TOGGLE_IDS="$CASE_SENSITIVE_ID $USE_REGEX_ID $ALPHABETICAL_ID $STAY_ON_VOLUME_ID $CONTENT_CASE_SENSITIVE_ID $CONTENT_USE_REGEX_ID $CONTENT_SKIP_BINARY_ID 411 412 413 421 422 423 431 432 433 $ALSO_PRINT_ID"
 
 # Restate the two ActionUI value conventions above in the form the rest of this
 # library was written against: "" for no choice, "1"/"0" for a checkbox. Doing it
@@ -319,19 +326,108 @@ get_command_from_dialog_controls()
 		output_command="$output_command -maxdepth $depth_max"
 	fi
 	
+	# The content match. -exec is used here as a CONDITION rather than an action: find
+	# takes the command's exit status as the test result, so this filters exactly the
+	# way -size or -type does and still composes with whatever action follows - which
+	# is what lets "delete every *.log containing X" stay one find command.
+	#
+	# It is emitted after every other test on purpose. find evaluates left to right and
+	# short-circuits, so the grep only ever runs on files that already passed the cheap
+	# predicates. Measured on 3000 files: 0.06s here against 3.6s if it ran first.
+	local content_pattern="$OMC_ACTIONUI_VIEW_701_VALUE"
+	# grep reads every LINE of -e as a pattern of its own, so a blank line anywhere in
+	# a multi-line value is an empty alternative that matches every file - "find the
+	# files containing X" silently becomes "list everything".
+	#
+	# Only when there is more than one line. A single line has no alternatives, so it
+	# is exactly the pattern the user meant even when it is nothing but spaces, and
+	# stripping it would break a deliberate search for whitespace. Blank covers spaces,
+	# tabs and a lone CR, not just an empty line: text pasted from a browser or a
+	# Windows-authored file is CRLF, which makes a bare /^$/ miss the likeliest paste
+	# there is.
+	local content_newline='
+'
+	local content_stripped
+	case "$content_pattern" in
+		*"$content_newline"*)
+			content_stripped=$(printf '%s' "$content_pattern" \
+				| /usr/bin/sed '/^[[:space:]]*$/d')
+			# Only on success. sed exits non-zero on an illegal byte sequence having
+			# emitted a truncated stream, and taking that would turn a filtered search
+			# into an unfiltered one - which with Delete selected is not a small thing.
+			if [ $? -eq 0 ]; then
+				content_pattern="$content_stripped"
+			fi
+			;;
+	esac
+	local content_emitted=0
+	if [ -n "$content_pattern" ]; then
+		content_emitted=1
+		local content_grep="/usr/bin/grep -q"
+		# The Name tab matches case-insensitively unless asked otherwise, and the
+		# content match follows it rather than inventing a second convention.
+		if [ "$OMC_ACTIONUI_VIEW_702_VALUE" != "1" ]; then
+			content_grep="$content_grep -i"
+		fi
+		# Always one of -F or -E, never bare grep: plain grep is BRE, where "." and
+		# "*" are still metacharacters, so an unchecked "Use regex pattern" box would
+		# be lying about a pattern like "a.c". -F is genuinely literal, and -E is the
+		# extended flavor, the same one find -E gives -regex.
+		if [ "$OMC_ACTIONUI_VIEW_703_VALUE" = "1" ]; then
+			content_grep="$content_grep -E"
+		else
+			content_grep="$content_grep -F"
+		fi
+		if [ "$OMC_ACTIONUI_VIEW_704_VALUE" = "1" ]; then
+			content_grep="$content_grep -I"
+		fi
+		# -type f is not a nicety. grep blocks forever in read() on a FIFO, and macOS
+		# puts real ones in a home directory - Realm keeps three under
+		# ~/Library/Containers here - so without this, "search my home folder for some
+		# text" hangs with no error and no way to see why. Character devices with no
+		# EOF hang the same way. -I cannot help: nothing has been read yet. It also
+		# saves one grep fork and one "Is a directory" line per directory in the tree.
+		#
+		# Skipped when the file type picker already said regular files, purely to keep
+		# the preview free of a duplicate. Three of that picker's other choices are
+		# contradictory with it and each correctly finds nothing: "Directories" and
+		# "Not regular files" because neither names something with contents to match,
+		# and "Symbolic links" for a subtler reason - grep would happily read through a
+		# link to its target, but following links is exactly what reopens the hang this
+		# guard exists for, since a link can point at a FIFO.
+		if [ "$OMC_ACTIONUI_VIEW_201_VALUE" != "f" ]; then
+			output_command="$output_command -type f"
+		fi
+		# -e, so a pattern that begins with "-" is read as a pattern and not an option.
+		output_command="$output_command -exec $content_grep -e $(shell_quote "$content_pattern") {} ';'"
+	fi
+
 	local action_choice="$OMC_ACTIONUI_VIEW_801_VALUE"
 	local action_also_print="$OMC_ACTIONUI_VIEW_803_VALUE"
+	local action_emitted=0
 	if [ "$action_also_print" = "1" ] && [ "$action_choice" != "-print" ] && [ "$action_choice" != "-print0" ]; then
 		output_command="$output_command -print"
+		action_emitted=1
 	fi
 
 	if [ "$action_choice" = "-exec" -o  "$action_choice" = "-execdir" ]; then
 		local action_exec_tool="$OMC_ACTIONUI_VIEW_802_VALUE"
 		if [ -n "$action_exec_tool" ]; then
 			output_command="$output_command $action_choice $action_exec_tool ';'"
+			action_emitted=1
 		fi
 	elif [ -n "$action_choice" ]; then
 		output_command="$output_command $action_choice"
+		action_emitted=1
+	fi
+
+	# find supplies an implicit -print only when the expression contains no -exec, -ls
+	# or -print of its own. The content test is an -exec, so it satisfies that rule and
+	# cancels the implicit print. Without this, choosing "Execute tool", leaving the
+	# tool field empty and unticking "Also print" turns a content search from "lists
+	# every match" into "prints nothing at all", with nothing on screen to explain it.
+	if [ "$content_emitted" = "1" ] && [ "$action_emitted" = "0" ]; then
+		output_command="$output_command -print"
 	fi
 	
 	local output_choice="$OMC_ACTIONUI_VIEW_901_VALUE"
@@ -575,12 +671,12 @@ set_combo_picker_options()
 			seen_items="$seen_items
 $one_item"
 			printf '%s\n' "$one_item" >> "$state_path"
-			escaped=$(json_escape "$one_item")
-			"$dialog" "$window_uuid" "$menu_id" omc_insert_element \
-				"$(printf '{"type":"Button","id":%s,"properties":{"title":"%s","actionID":"find.combo.pick"}}' \
-					"$(( base + index ))" "$escaped")" \
-				children append
-			index=$(( index + 1 ))
+		escaped=$(json_escape "$one_item")
+		"$dialog" "$window_uuid" "$menu_id" omc_insert_element \
+			"$(printf '{"type":"Button","id":%s,"properties":{"title":"%s","actionID":"find.combo.pick"}}' \
+				"$(( base + index ))" "$escaped")" \
+			children append
+		index=$(( index + 1 ))
 		done < "$list_path"
 	done
 }

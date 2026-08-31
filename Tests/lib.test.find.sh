@@ -48,6 +48,7 @@ for _required in \
     SIZE_COMPARE_ID SIZE_NUMBER_ID SIZE_UNIT_ID EMPTINESS_ID \
     PERMISSIONS_COMPARE_ID PERMISSIONS_GRID_ID \
     DEPTH_MIN_ID DEPTH_MAX_ID STAY_ON_VOLUME_ID \
+    CONTENT_ID CONTENT_CASE_SENSITIVE_ID CONTENT_USE_REGEX_ID CONTENT_SKIP_BINARY_ID \
     ACTION_KIND_ID ACTION_TOOL_ID ALSO_PRINT_ID \
     OUTPUT_KIND_ID OUTPUT_TARGET_ID \
     COMBO_PICKER_OFFSET NO_CHOICE_TAG COMBO_FIELD_IDS \
@@ -177,7 +178,8 @@ find_token_count() {
 
 # Run the built command for real. This is what makes the assertions worth anything:
 # the string is not merely what was intended, it is one /usr/bin/find accepts.
-# Only ever call this with a non-destructive action selected.
+# With a destructive action selected, the caller must have pointed the search at a
+# throwaway tree first - the -delete sections here and in 60-run.test.sh do.
 find_run_built_command() { # -> the command's exit status
     local command_text
     command_text=$(find_command)

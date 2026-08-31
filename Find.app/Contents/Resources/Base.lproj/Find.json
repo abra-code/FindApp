@@ -212,6 +212,114 @@
                 {
                     "type": "Tab",
                     "properties": {
+                        "title": "Content"
+                    },
+                    "content": {
+                        "type": "VStack",
+                        "properties": {
+                            "alignment": "leading",
+                            "spacing": 7,
+                            "padding": {
+                                "top": 12,
+                                "leading": 12,
+                                "bottom": 12,
+                                "trailing": 12
+                            },
+                            "frame": {
+                                "maxWidth": "infinity",
+                                "maxHeight": "infinity",
+                                "alignment": "topLeading"
+                            }
+                        },
+                        "children": [
+                            {
+                                "type": "HStack",
+                                "properties": {
+                                    "spacing": 6
+                                },
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "properties": {
+                                            "text": "Contains:",
+                                            "frame": {
+                                                "width": 106,
+                                                "alignment": "leading"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "TextField",
+                                        "id": 701,
+                                        "properties": {
+                                            "prompt": "text or regex to find inside the file",
+                                            "actionID": "find.update.output",
+                                            "frame": {
+                                                "maxWidth": "infinity"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "Menu",
+                                        "id": 1701,
+                                        "properties": {
+                                            "buttonStyle": "plain",
+                                            "cornerRadius": 5,
+                                            "background": "#00000010",
+                                            "help": "Recent entries",
+                                            "frame": {
+                                                "width": 24,
+                                                "height": 21
+                                            }
+                                        },
+                                        "label": {
+                                            "type": "Image",
+                                            "properties": {
+                                                "systemName": "chevron.up.chevron.down"
+                                            }
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Toggle",
+                                "id": 702,
+                                "properties": {
+                                    "title": "Case sensitive",
+                                    "style": "checkbox",
+                                    "actionID": "find.update.output"
+                                }
+                            },
+                            {
+                                "type": "Toggle",
+                                "id": 703,
+                                "properties": {
+                                    "title": "Use regex pattern",
+                                    "style": "checkbox",
+                                    "actionID": "find.update.output"
+                                }
+                            },
+                            {
+                                "type": "Toggle",
+                                "id": 704,
+                                "properties": {
+                                    "title": "Skip binary files",
+                                    "style": "checkbox",
+                                    "isOn": true,
+                                    "help": "Adds grep -I. A match inside an archive or an image does not count, and the search does not read every byte of every binary.",
+                                    "actionID": "find.update.output"
+                                }
+                            },
+                            {
+                                "type": "Spacer"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "Tab",
+                    "properties": {
                         "title": "Attributes"
                     },
                     "content": {
