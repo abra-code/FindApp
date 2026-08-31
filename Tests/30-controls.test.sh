@@ -28,7 +28,7 @@ reset_window
 omc_control "$LOCATION_ID" "/tmp"
 refresh
 check_status "the refresh exited cleanly" 0
-check "the preview shows the command" "/usr/bin/find '/tmp' -print" \
+check "the preview shows the command" "/usr/bin/find -x '/tmp' -print" \
     "$(ui_value "$COMMAND_PREVIEW_ID")"
 
 section "the regex switch is only meaningful for a full path search"
@@ -45,7 +45,7 @@ reset_window
 omc_control "$LOCATION_ID" "/tmp"
 omc_control "$PATTERN_KIND_ID" -ipath
 omc_fire find.pattern.choice.change "$PATTERN_KIND_ID" -ipath
-check "the preview was rewritten" "/usr/bin/find '/tmp' -print" \
+check "the preview was rewritten" "/usr/bin/find -x '/tmp' -print" \
     "$(ui_value "$COMMAND_PREVIEW_ID")"
 check "and regex became available" "enabled" "$(enabled_state "$USE_REGEX_ID")"
 
@@ -133,14 +133,14 @@ section "every choice handler updates the controls its own tab owns"
 reset_window
 omc_control "$LOCATION_ID" "/tmp"
 omc_fire find.size.choice.change "$SIZE_COMPARE_ID" +
-check "the size handler refreshed the preview" "/usr/bin/find '/tmp' -print" \
+check "the size handler refreshed the preview" "/usr/bin/find -x '/tmp' -print" \
     "$(ui_value "$COMMAND_PREVIEW_ID")"
 check "and enabled the number" "enabled" "$(enabled_state "$SIZE_NUMBER_ID")"
 
 reset_window
 omc_control "$LOCATION_ID" "/tmp"
 omc_fire find.permissions.choice.change "$PERMISSIONS_COMPARE_ID" -
-check "the permissions handler refreshed the preview" "/usr/bin/find '/tmp' -print" \
+check "the permissions handler refreshed the preview" "/usr/bin/find -x '/tmp' -print" \
     "$(ui_value "$COMMAND_PREVIEW_ID")"
 check "and enabled the grid" "enabled" "$(enabled_state "$PERMISSIONS_GRID_ID")"
 
@@ -164,7 +164,7 @@ reset_window
 omc_control "$LOCATION_ID" "/tmp"
 omc_control "$PATTERN_ID" '*.txt'
 omc_fire find.update.output "$PATTERN_ID" '*.txt'
-check "the preview picked the pattern up" "/usr/bin/find '/tmp' -iname '*.txt' -print" \
+check "the preview picked the pattern up" "/usr/bin/find -x '/tmp' -iname '*.txt' -print" \
     "$(ui_value "$COMMAND_PREVIEW_ID")"
 check "and nothing was enabled or disabled" "untouched" "$(enabled_state "$USE_REGEX_ID")"
 

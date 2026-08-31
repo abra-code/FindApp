@@ -193,6 +193,17 @@
                                 }
                             },
                             {
+                                "type": "Toggle",
+                                "id": 112,
+                                "properties": {
+                                    "title": "Stay on one volume (do not cross mount points)",
+                                    "style": "checkbox",
+                                    "isOn": true,
+                                    "help": "Adds -x, which stops the search from descending into other mounted volumes.",
+                                    "actionID": "find.update.output"
+                                }
+                            },
+                            {
                                 "type": "Spacer"
                             }
                         ]

@@ -129,6 +129,11 @@ check "a legacy 0 became an unticked one" "false" "$(ui_value "$ALSO_PRINT_ID")"
 check "and a legacy empty choice became the sentinel" "$NO_CHOICE_TAG" \
     "$(ui_value "$FILE_TYPE_ID")"
 check "while a plain text value is untouched" "*.c" "$(ui_value "$PATTERN_ID")"
+# The config above names no volume switch, because no config written before this
+# option existed can. Load applies defaults.tsv first for exactly this case, so the
+# control has to come back on rather than at the Toggle's own false.
+check "and a control the config never heard of gets its default" "true" \
+    "$(ui_value "$STAY_ON_VOLUME_ID")"
 
 section "a saved config reloads into the same command"
 # Note this proves the two halves agree, not that either uses ActionUI's spellings:
@@ -148,7 +153,7 @@ omc_control "$SIZE_UNIT_ID" k
 omc_control "$ACTION_KIND_ID" -ls
 _expected="$(find_command)"
 check "the command under test is not the trivial one" "yes" \
-    "$([ "$_expected" != "/usr/bin/find '/tmp' -print" ] && echo yes || echo no)"
+    "$([ "$_expected" != "/usr/bin/find -x '/tmp' -print" ] && echo yes || echo no)"
 omc_run find.save.config
 check_status "the save exited cleanly" 0
 

@@ -25,6 +25,15 @@ check "the declared defaults loaded" "yes" \
 check "the size unit picker opens on the first option" "c" \
     "$OMC_ACTIONUI_VIEW_303_VALUE"
 check "and defaults.tsv wants a different one" "M" "$(declared_default "$SIZE_UNIT_ID")"
+# The volume switch is the one control that has to be checked before find.init runs
+# too, since a window that opened unchecked and was then corrected would flicker.
+check "the volume switch is checked the moment the window opens" "true" \
+    "$OMC_ACTIONUI_VIEW_112_VALUE"
+# A config file that names 112 still wins - load applies the config over the
+# defaults. What this pins is the config that does NOT name it, which is every
+# config any existing user has.
+check "and defaults.tsv agrees, so a config written before it gets it on" "true" \
+    "$(declared_default "$STAY_ON_VOLUME_ID")"
 
 section "find.init seeds every control from defaults.tsv"
 reset_window

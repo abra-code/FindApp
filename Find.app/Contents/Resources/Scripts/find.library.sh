@@ -29,6 +29,7 @@ PATTERN_ID=102
 CASE_SENSITIVE_ID=103
 USE_REGEX_ID=104
 ALPHABETICAL_ID=111
+STAY_ON_VOLUME_ID=112
 FILE_TYPE_ID=201
 XATTR_ID=202
 SIZE_COMPARE_ID=301
@@ -67,7 +68,7 @@ SENTINEL_PICKER_IDS="$FILE_TYPE_ID $SIZE_COMPARE_ID $EMPTINESS_ID $PERMISSIONS_C
 
 # ActionUI Toggles carry a Bool, so they arrive as "true"/"false" where the nib
 # checkboxes arrived as "1"/"0".
-TOGGLE_IDS="$CASE_SENSITIVE_ID $USE_REGEX_ID $ALPHABETICAL_ID 411 412 413 421 422 423 431 432 433 $ALSO_PRINT_ID"
+TOGGLE_IDS="$CASE_SENSITIVE_ID $USE_REGEX_ID $ALPHABETICAL_ID $STAY_ON_VOLUME_ID 411 412 413 421 422 423 431 432 433 $ALSO_PRINT_ID"
 
 # Restate the two ActionUI value conventions above in the form the rest of this
 # library was written against: "" for no choice, "1"/"0" for a checkbox. Doing it
@@ -117,6 +118,15 @@ get_command_from_dialog_controls()
 	local use_alphabetical_order="$OMC_ACTIONUI_VIEW_111_VALUE"
 	if [ "$use_alphabetical_order" = "1" ]; then
 		output_command="$output_command -s"
+	fi
+
+	# -x is an option, not a primary, so it belongs before the path like -s does.
+	# It stops the descent at any directory whose device number differs from the one
+	# it started on, which is what keeps a search of /System/Volumes/Data off the
+	# external disks mounted underneath it.
+	local stay_on_volume="$OMC_ACTIONUI_VIEW_112_VALUE"
+	if [ "$stay_on_volume" = "1" ]; then
+		output_command="$output_command -x"
 	fi
 
 	local pattern="$OMC_ACTIONUI_VIEW_102_VALUE"

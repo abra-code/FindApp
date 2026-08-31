@@ -39,7 +39,7 @@ omc_control "$PATTERN_ID" '*.log'
 omc_run find.run
 check_status "the run exited cleanly" 0
 check "the preview shows the command that ran" \
-    "/usr/bin/find '$ROOT' -iname '*.log' -print" "$(ui_value "$COMMAND_PREVIEW_ID")"
+    "/usr/bin/find -x '$ROOT' -iname '*.log' -print" "$(ui_value "$COMMAND_PREVIEW_ID")"
 check "nothing was deleted" "3" \
     "$(/usr/bin/find "$ROOT" -type f | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
 check "and the user was not asked to confirm anything" "0" "$(alerts_count)"

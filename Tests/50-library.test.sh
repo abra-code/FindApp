@@ -22,6 +22,89 @@ build_tree() {
     /bin/chmod 0600 "$ROOT/sub/three.md"
 }
 
+# A foreign volume hanging below the search root, which is the shape issue #3
+# describes. hdiutil attaches a disk image at an arbitrary mount point without root,
+# so this needs nothing of the machine it runs on beyond a writable scratch dir.
+XDEV_IMAGE="$OMCTEST_WORK/xdev.dmg"
+XDEV_ROOT="$ROOT/mounted-volume"
+
+XDEV_LOG="$OMCTEST_WORK/xdev.log"
+
+xdev_mount() { # -> yes | no
+    # Both modes mktemp a fresh scratch tree, so this cannot reach a previous run's
+    # mount point - it guards the one case that can repeat, a deliberately reused
+    # OMCTEST_SCRATCH, where hdiutil create would otherwise refuse to overwrite.
+    xdev_unmount
+    /bin/mkdir -p "$XDEV_ROOT"
+    if ! /usr/bin/hdiutil create -size 2m -fs 'HFS+' -volname FindXdev -quiet \
+            "$XDEV_IMAGE" >>"$XDEV_LOG" 2>&1; then
+        xdev_unmount
+        echo no
+        return 0
+    fi
+    if ! /usr/bin/hdiutil attach -quiet -nobrowse -owners off \
+            -mountpoint "$XDEV_ROOT" "$XDEV_IMAGE" >>"$XDEV_LOG" 2>&1; then
+        xdev_unmount
+        echo no
+        return 0
+    fi
+    if ! printf 'x\n' > "$XDEV_ROOT/on-the-other-volume.txt" 2>>"$XDEV_LOG"; then
+        xdev_unmount
+        echo no
+        return 0
+    fi
+    echo yes
+}
+
+xdev_unmount() {
+    # An image left attached outlives the whole run: it holds the scratch dir open,
+    # and because rm -rf crosses mount points the runner's cleanup would delete the
+    # volume's contents and leave a device attached with no backing file. Force the
+    # detach rather than let a busy mount block it. rmdir rather than rm -rf: it
+    # refuses while anything is still mounted there, and the empty mount point has
+    # to go or every later section counts one extra directory.
+    if [ -d "$XDEV_ROOT" ]; then
+        /usr/bin/hdiutil detach -quiet -force "$XDEV_ROOT" >/dev/null 2>&1
+        # Report a mount that survived, not a detach that had nothing to do: the
+        # failure paths above call this with the mount point created and nothing
+        # mounted on it, and hdiutil returns non-zero for that too - which would
+        # print a misleading line just before the real "could not mount" one. Once
+        # this runs from the trap there is no check left between here and the rm -rf
+        # that would cross into a volume still mounted, so that case does need saying.
+        if [ "$(/usr/bin/stat -f '%d' "$XDEV_ROOT" 2>/dev/null)" \
+             != "$(/usr/bin/stat -f '%d' "$ROOT" 2>/dev/null)" ]; then
+            printf '50-library: could not detach %s\n' "$XDEV_ROOT" >&2
+        fi
+    fi
+    /bin/rm -f "$XDEV_IMAGE"
+    /bin/rmdir "$XDEV_ROOT" 2>/dev/null
+    return 0
+}
+
+# The trap below has to detach the volume before anything runs rm -rf over the mount
+# point, but installing it replaces whatever cleanup was already there - so ask what
+# that was first and put it back. The harness only installs its own trap in this
+# shell when it owns the scratch tree; under the runner, and when a caller hands it
+# an existing OMCTEST_SCRATCH, it deliberately installs nothing, and calling its
+# cleanup anyway would delete a directory that is not ours. Read the trap rather
+# than infer it from the mode. Command substitution, never a pipeline: a subshell
+# starts with the trap list cleared, so "trap -p EXIT | grep" always finds nothing.
+case "$(trap -p EXIT)" in
+    *omctest_cleanup_scratch*) xdev_displaced_cleanup=1 ;;
+    *)                         xdev_displaced_cleanup=0 ;;
+esac
+
+# INT and TERM have to exit explicitly: a handler that merely returns lets the file
+# carry on, which under Ctrl-C would run the remaining checks against a mount point
+# the handler just detached.
+xdev_at_exit() {
+    xdev_unmount
+    [ "$xdev_displaced_cleanup" = "0" ] || omctest_cleanup_scratch
+}
+trap 'xdev_at_exit' EXIT
+trap 'xdev_at_exit; exit 130' INT
+trap 'xdev_at_exit; exit 143' TERM
+
 section "preconditions"
 build_tree
 check "the fixture tree was built" "yes" "$([ -d "$ROOT/sub/deeper" ] && echo yes || echo no)"
@@ -31,7 +114,7 @@ check "/usr/bin/find is present"   "yes" "$([ -x /usr/bin/find ] && echo yes || 
 section "an untouched window searches the location and prints"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
-check "the whole command" "/usr/bin/find '$ROOT' -print" "$(find_command)"
+check "the whole command" "/usr/bin/find -x '$ROOT' -print" "$(find_command)"
 check "and find accepts it"  "0" "$(find_run_built_command)"
 check "and it walks the whole tree" "8" \
     "$(find_run_built_command_output | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
@@ -40,6 +123,9 @@ section "alphabetical order is a flag before the location, not after"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$ALPHABETICAL_ID" true
+# -x is on by default and would otherwise sit between the two tokens this section
+# is about, which is what the next section but one exists to pin down.
+omc_control "$STAY_ON_VOLUME_ID" false
 check "the -s comes first"   "-s" "$(find_token_at 2)"
 check "the location follows" "'$ROOT'" "$(find_token_at 3)"
 check "find accepts it"       "0" "$(find_run_built_command)"
@@ -58,21 +144,115 @@ check "the old 1 spelling is still honored" "yes" "$(find_has_token -s)"
 omc_control "$ALPHABETICAL_ID" 0
 check "and the old 0 spelling too"           "no" "$(find_has_token -s)"
 
+section "staying on one volume is a flag before the location, and is the default"
+# Issue #3: a search of /System/Volumes/Data descended into every external disk
+# mounted beneath it. -x is find's own answer, and like -s it is an option rather
+# than a primary, so it has to land before the path or find rejects the command.
+# It is on out of the box because a search of a folder almost never means "and
+# whatever happens to be mounted underneath it" - find's own default is the
+# surprising one here.
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+check "on out of the box"    "yes" "$(find_has_token -x)"
+check "the -x comes first"   "-x" "$(find_token_at 2)"
+check "the location follows" "'$ROOT'" "$(find_token_at 3)"
+check "find accepts it"       "0" "$(find_run_built_command)"
+check "and it still walks the whole tree" "8" \
+    "$(find_run_built_command_output | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
+
+section "and it sorts after -s when both are on, which is the order find wants"
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+omc_control "$ALPHABETICAL_ID" true
+omc_control "$STAY_ON_VOLUME_ID" true
+check "the whole command" "/usr/bin/find -s -x '$ROOT' -print" "$(find_command)"
+check "find accepts both"  "0" "$(find_run_built_command)"
+
+section "the volume switch honors both Toggle spellings, as the others do"
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+omc_control "$STAY_ON_VOLUME_ID" false
+check "false really means off" "no" "$(find_has_token -x)"
+omc_control "$STAY_ON_VOLUME_ID" 1
+check "the old 1 spelling is honored" "yes" "$(find_has_token -x)"
+omc_control "$STAY_ON_VOLUME_ID" 0
+check "and the old 0 spelling too"     "no" "$(find_has_token -x)"
+
+section "-x really keeps the search off another mounted volume"
+# The reported bug is behavioral, not textual, and every check above would pass
+# just as well against a build that emitted -x somewhere find quietly ignores.
+# A 2MB disk image mounted inside the fixture reproduces the reporter's shape
+# exactly - a foreign device hanging below the search root - without needing root
+# or caring what is plugged into the machine.
+check "a scratch volume mounted inside the tree" "yes" "$(xdev_mount)"
+if [ -f "$XDEV_ROOT/on-the-other-volume.txt" ]; then
+    check "the mount really is a different device" "yes" \
+        "$([ "$(/usr/bin/stat -f '%d' "$ROOT")" != "$(/usr/bin/stat -f '%d' "$XDEV_ROOT")" ] \
+            && echo yes || echo no)"
+
+    reset_controls_to_app_defaults
+    omc_control "$LOCATION_ID" "$ROOT"
+    omc_control "$PATTERN_ID" 'on-the-other-volume.txt'
+    omc_control "$STAY_ON_VOLUME_ID" false
+    check "unchecked, the search escapes onto it" "$XDEV_ROOT/on-the-other-volume.txt" \
+        "$(find_run_built_command_output)"
+
+    omc_control "$STAY_ON_VOLUME_ID" true
+    check "checked, it does not" "" "$(find_run_built_command_output)"
+
+    # Positive control: -x must stop the descent at the mount point, not stop the
+    # search. Without this, a build that emitted a flag making find return nothing
+    # at all would pass the check above.
+    omc_control "$PATTERN_ID" 'one.txt'
+    check "while the same volume is still searched" "$ROOT/one.txt" \
+        "$(find_run_built_command_output)"
+else
+    # hdiutil's own words, so the red check above is diagnosable rather than just red.
+    printf '50-library: could not mount a scratch volume:\n%s\n' \
+        "$(/bin/cat "$XDEV_LOG" 2>/dev/null)" >&2
+fi
+
+# Outside the if, so an unmountable machine does not also leak the mount point, and
+# asserted rather than discarded: a mount point left behind would otherwise surface
+# much later as three unrelated file-count failures with nothing pointing back here.
+xdev_unmount
+check "the scratch volume was detached and its mount point removed" "no" \
+    "$([ -e "$XDEV_ROOT" ] && echo yes || echo no)"
+
 section "the name pattern picks its primary from the kind, case and regex switches"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$PATTERN_ID" '*.txt'
-check "name, case-insensitive"  "/usr/bin/find '$ROOT' -iname '*.txt' -print" "$(find_command)"
+check "name, case-insensitive"  "/usr/bin/find -x '$ROOT' -iname '*.txt' -print" "$(find_command)"
 omc_control "$CASE_SENSITIVE_ID" true
-check "name, case-sensitive"    "/usr/bin/find '$ROOT' -name '*.txt' -print"  "$(find_command)"
+check "name, case-sensitive"    "/usr/bin/find -x '$ROOT' -name '*.txt' -print"  "$(find_command)"
 omc_control "$CASE_SENSITIVE_ID" false
 omc_control "$PATTERN_KIND_ID" -ipath
-check "full path, case-insensitive" "/usr/bin/find '$ROOT' -ipath '*.txt' -print" "$(find_command)"
+check "full path, case-insensitive" "/usr/bin/find -x '$ROOT' -ipath '*.txt' -print" "$(find_command)"
 omc_control "$USE_REGEX_ID" true
-check "full path as a regex adds -E" "/usr/bin/find -E '$ROOT' -iregex '*.txt' -print" \
+check "full path as a regex adds -E" "/usr/bin/find -x -E '$ROOT' -iregex '*.txt' -print" \
     "$(find_command)"
 omc_control "$CASE_SENSITIVE_ID" true
-check "and case-sensitive regex"     "/usr/bin/find -E '$ROOT' -regex '*.txt' -print" \
+check "and case-sensitive regex"     "/usr/bin/find -x -E '$ROOT' -regex '*.txt' -print" \
+    "$(find_command)"
+
+section "-E is the one option -x has to sit beside, so run that combination for real"
+# The two checks above assert a string only: "*.txt" is not a valid ERE, so find
+# rejects the command and neither shape is ever executed. -x -E and -s -x -E are
+# the orderings the option block can produce that nothing else in this file runs.
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+omc_control "$PATTERN_KIND_ID" -ipath
+omc_control "$USE_REGEX_ID" true
+omc_control "$PATTERN_ID" '.*\.txt'
+check "find accepts -x alongside -E" "0" "$(find_run_built_command)"
+# one.txt, TWO.TXT (the regex is the case-insensitive -iregex here), link.txt and
+# sub/empty.txt - the whole path is matched, not just the last component.
+check "and the regex really matched" "4" \
+    "$(find_run_built_command_output | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
+omc_control "$ALPHABETICAL_ID" true
+check "and alongside both -s and -E"  "0" "$(find_run_built_command)"
+check "in that order"  "/usr/bin/find -s -x -E '$ROOT' -iregex '.*\.txt' -print" \
     "$(find_command)"
 
 section "no pattern means no primary at all, not an empty one"
@@ -99,9 +279,9 @@ section "the file type picker maps to -type, and its negatives to -not -type"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$FILE_TYPE_ID" f
-check "regular files"       "/usr/bin/find '$ROOT' -type f -print" "$(find_command)"
+check "regular files"       "/usr/bin/find -x '$ROOT' -type f -print" "$(find_command)"
 omc_control "$FILE_TYPE_ID" '!d'
-check "not directories" "/usr/bin/find '$ROOT' -not -type d -print" "$(find_command)"
+check "not directories" "/usr/bin/find -x '$ROOT' -not -type d -print" "$(find_command)"
 check "and find accepts the negated form" "0" "$(find_run_built_command)"
 omc_control "$FILE_TYPE_ID" d
 check "directories are found"  "3" \
@@ -117,7 +297,7 @@ omc_control "$EMPTINESS_ID" "$NO_CHOICE_TAG"
 omc_control "$PERMISSIONS_COMPARE_ID" "$NO_CHOICE_TAG"
 omc_control "$OUTPUT_KIND_ID" "$NO_CHOICE_TAG"
 omc_control "$OUTPUT_TARGET_ID" "/tmp/out.txt"
-check "the sentinel adds nothing anywhere" "/usr/bin/find '$ROOT' -print" "$(find_command)"
+check "the sentinel adds nothing anywhere" "/usr/bin/find -x '$ROOT' -print" "$(find_command)"
 # Positive controls: each of those pickers does produce a clause when really chosen.
 omc_control "$FILE_TYPE_ID" f
 check "a real file type does"   "yes" "$(find_has_token -type)"
@@ -130,12 +310,12 @@ omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$SIZE_COMPARE_ID" +
 omc_control "$SIZE_NUMBER_ID" 1000
 omc_control "$SIZE_UNIT_ID" M
-check "greater than"  "/usr/bin/find '$ROOT' -size +1000M -print" "$(find_command)"
+check "greater than"  "/usr/bin/find -x '$ROOT' -size +1000M -print" "$(find_command)"
 omc_control "$SIZE_COMPARE_ID" -
-check "less than"     "/usr/bin/find '$ROOT' -size -1000M -print" "$(find_command)"
+check "less than"     "/usr/bin/find -x '$ROOT' -size -1000M -print" "$(find_command)"
 # find spells "exactly" as a bare number, so the = comparison contributes nothing.
 omc_control "$SIZE_COMPARE_ID" =
-check "exactly"       "/usr/bin/find '$ROOT' -size 1000M -print"  "$(find_command)"
+check "exactly"       "/usr/bin/find -x '$ROOT' -size 1000M -print"  "$(find_command)"
 check "and find accepts it" "0" "$(find_run_built_command)"
 
 section "a size comparison with no number is not a size clause"
@@ -172,15 +352,15 @@ omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$PERMISSIONS_COMPARE_ID" -
 omc_control "$PERM_USER_READ_ID" true
 omc_control "$PERM_USER_WRITE_ID" true
-check "user read and write"  "/usr/bin/find '$ROOT' -perm '-u=rw' -print" "$(find_command)"
+check "user read and write"  "/usr/bin/find -x '$ROOT' -perm '-u=rw' -print" "$(find_command)"
 omc_control "$PERM_GROUP_READ_ID" true
-check "a second class is comma separated" "/usr/bin/find '$ROOT' -perm '-u=rw,g=r' -print" \
+check "a second class is comma separated" "/usr/bin/find -x '$ROOT' -perm '-u=rw,g=r' -print" \
     "$(find_command)"
 omc_control "$PERM_OTHER_EXEC_ID" true
-check "and a third"  "/usr/bin/find '$ROOT' -perm '-u=rw,g=r,o=x' -print" "$(find_command)"
+check "and a third"  "/usr/bin/find -x '$ROOT' -perm '-u=rw,g=r,o=x' -print" "$(find_command)"
 # find spells an exact match as a bare mode, so the = comparison contributes nothing.
 omc_control "$PERMISSIONS_COMPARE_ID" =
-check "exact bit match drops the operator" "/usr/bin/find '$ROOT' -perm 'u=rw,g=r,o=x' -print" \
+check "exact bit match drops the operator" "/usr/bin/find -x '$ROOT' -perm 'u=rw,g=r,o=x' -print" \
     "$(find_command)"
 
 section "a permissions comparison with no box ticked is not a -perm clause"
@@ -206,25 +386,25 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$ATIME_CHOICE_ID" -
 omc_control "$ATIME_NUMBER_ID" 5
-check "last access is -atime"        "/usr/bin/find '$ROOT' -atime -5h -print" "$(find_command)"
+check "last access is -atime"        "/usr/bin/find -x '$ROOT' -atime -5h -print" "$(find_command)"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$BTIME_CHOICE_ID" +
 omc_control "$BTIME_NUMBER_ID" 2
 omc_control "$BTIME_UNIT_ID" d
-check "creation time is -Btime"      "/usr/bin/find '$ROOT' -Btime +2d -print" "$(find_command)"
+check "creation time is -Btime"      "/usr/bin/find -x '$ROOT' -Btime +2d -print" "$(find_command)"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$MTIME_CHOICE_ID" -
 omc_control "$MTIME_NUMBER_ID" 1
 omc_control "$MTIME_UNIT_ID" w
-check "modification time is -mtime"  "/usr/bin/find '$ROOT' -mtime -1w -print" "$(find_command)"
+check "modification time is -mtime"  "/usr/bin/find -x '$ROOT' -mtime -1w -print" "$(find_command)"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$CTIME_CHOICE_ID" -
 omc_control "$CTIME_NUMBER_ID" 30
 omc_control "$CTIME_UNIT_ID" m
-check "last status change is -ctime"  "/usr/bin/find '$ROOT' -ctime -30m -print" "$(find_command)"
+check "last status change is -ctime"  "/usr/bin/find -x '$ROOT' -ctime -30m -print" "$(find_command)"
 check "and find accepts it"       "0" "$(find_run_built_command)"
 
 section "a time row with no number is not a time clause"
@@ -251,33 +431,33 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$DEPTH_MIN_ID" 1
 omc_control "$DEPTH_MAX_ID" 1
-check "both bounds"  "/usr/bin/find '$ROOT' -mindepth 1 -maxdepth 1 -print" "$(find_command)"
+check "both bounds"  "/usr/bin/find -x '$ROOT' -mindepth 1 -maxdepth 1 -print" "$(find_command)"
 check "which is the top level only" "4" \
     "$(find_run_built_command_output | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
 
 section "extended attributes: the three fixed choices, then a named attribute"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
-check "Ignore adds nothing"  "/usr/bin/find '$ROOT' -print" "$(find_command)"
+check "Ignore adds nothing"  "/usr/bin/find -x '$ROOT' -print" "$(find_command)"
 omc_control "$XATTR_ID" Any
-check "Any is -xattr"        "/usr/bin/find '$ROOT' -xattr -print" "$(find_command)"
+check "Any is -xattr"        "/usr/bin/find -x '$ROOT' -xattr -print" "$(find_command)"
 omc_control "$XATTR_ID" None
-check "None is negated"      "/usr/bin/find '$ROOT' -not -xattr -print" "$(find_command)"
+check "None is negated"      "/usr/bin/find -x '$ROOT' -not -xattr -print" "$(find_command)"
 omc_control "$XATTR_ID" com.apple.FinderInfo
-check "a name is -xattrname" "/usr/bin/find '$ROOT' -xattrname 'com.apple.FinderInfo' -print" \
+check "a name is -xattrname" "/usr/bin/find -x '$ROOT' -xattrname 'com.apple.FinderInfo' -print" \
     "$(find_command)"
 
 section "the action picker chooses the primary, and -exec carries its tool"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$ACTION_KIND_ID" -ls
-check "list with ls"  "/usr/bin/find '$ROOT' -print -ls" "$(find_command)"
+check "list with ls"  "/usr/bin/find -x '$ROOT' -print -ls" "$(find_command)"
 omc_control "$ACTION_KIND_ID" -print0
-check "print0 does not also print" "/usr/bin/find '$ROOT' -print0" "$(find_command)"
+check "print0 does not also print" "/usr/bin/find -x '$ROOT' -print0" "$(find_command)"
 check "and no separate -print was added" "no" "$(find_has_token -print)"
 omc_control "$ACTION_KIND_ID" -exec
 omc_control "$ACTION_TOOL_ID" "/bin/echo {}"
-check "exec gets its terminator" "/usr/bin/find '$ROOT' -print -exec /bin/echo {} ';'" \
+check "exec gets its terminator" "/usr/bin/find -x '$ROOT' -print -exec /bin/echo {} ';'" \
     "$(find_command)"
 
 section "Also print is what adds the extra -print, and only where it can"
@@ -285,9 +465,9 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$ACTION_KIND_ID" -ls
 omc_control "$ALSO_PRINT_ID" false
-check "unchecked, ls alone" "/usr/bin/find '$ROOT' -ls" "$(find_command)"
+check "unchecked, ls alone" "/usr/bin/find -x '$ROOT' -ls" "$(find_command)"
 omc_control "$ALSO_PRINT_ID" true
-check "checked, print then ls" "/usr/bin/find '$ROOT' -print -ls" "$(find_command)"
+check "checked, print then ls" "/usr/bin/find -x '$ROOT' -print -ls" "$(find_command)"
 
 section "-exec with no tool named contributes nothing"
 reset_controls_to_app_defaults
@@ -314,17 +494,17 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$OUTPUT_KIND_ID" "|"
 omc_control "$OUTPUT_TARGET_ID" "/usr/bin/wc -l"
-check "pipe to"  "/usr/bin/find '$ROOT' -print | /usr/bin/wc -l" "$(find_command)"
+check "pipe to"  "/usr/bin/find -x '$ROOT' -print | /usr/bin/wc -l" "$(find_command)"
 omc_control "$OUTPUT_KIND_ID" ">"
 omc_control "$OUTPUT_TARGET_ID" "$OMCTEST_WORK/out.txt"
-check "save to quotes the path" "/usr/bin/find '$ROOT' -print > '$OMCTEST_WORK/out.txt'" \
+check "save to quotes the path" "/usr/bin/find -x '$ROOT' -print > '$OMCTEST_WORK/out.txt'" \
     "$(find_command)"
 check "and the file really gets written" "0" "$(find_run_built_command)"
 check "with every path in it" "8" \
     "$(/usr/bin/wc -l < "$OMCTEST_WORK/out.txt" | /usr/bin/tr -d ' ')"
 omc_control "$OUTPUT_KIND_ID" "?"
 omc_control "$OUTPUT_TARGET_ID" "| /usr/bin/wc -l"
-check "custom is appended verbatim" "/usr/bin/find '$ROOT' -print | /usr/bin/wc -l" \
+check "custom is appended verbatim" "/usr/bin/find -x '$ROOT' -print | /usr/bin/wc -l" \
     "$(find_command)"
 
 section "an output target with no kind chosen is ignored"
@@ -332,7 +512,7 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$OUTPUT_KIND_ID" "$NO_CHOICE_TAG"
 omc_control "$OUTPUT_TARGET_ID" "/usr/bin/wc -l"
-check "the target is not appended" "/usr/bin/find '$ROOT' -print" "$(find_command)"
+check "the target is not appended" "/usr/bin/find -x '$ROOT' -print" "$(find_command)"
 
 section "a value carrying shell metacharacters is quoted, not interpolated"
 # find.run.sh evals the command it builds, and control 1 now receives paths from
@@ -342,7 +522,7 @@ reset_controls_to_app_defaults
 /bin/mkdir -p "$OMCTEST_WORK/Bob's Stuff"
 omc_control "$LOCATION_ID" "$OMCTEST_WORK/Bob's Stuff"
 check "an apostrophe is escaped in place" \
-    "/usr/bin/find '$OMCTEST_WORK/Bob'\\''s Stuff' -print" "$(find_command)"
+    "/usr/bin/find -x '$OMCTEST_WORK/Bob'\\''s Stuff' -print" "$(find_command)"
 check "and find still accepts the command" "0" "$(find_run_built_command)"
 check "and searches the folder that was named" "$OMCTEST_WORK/Bob's Stuff" \
     "$(find_run_built_command_output)"
@@ -362,6 +542,7 @@ section "everything at once still produces a command find accepts"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$ALPHABETICAL_ID" true
+omc_control "$STAY_ON_VOLUME_ID" true
 omc_control "$PATTERN_ID" '*.txt'
 omc_control "$FILE_TYPE_ID" f
 omc_control "$SIZE_COMPARE_ID" +
@@ -372,7 +553,7 @@ omc_control "$MTIME_NUMBER_ID" 1
 omc_control "$MTIME_UNIT_ID" w
 omc_control "$DEPTH_MAX_ID" 2
 check "the whole command" \
-    "/usr/bin/find -s '$ROOT' -iname '*.txt' -type f -size +1c -mtime -1w -maxdepth 2 -print" \
+    "/usr/bin/find -s -x '$ROOT' -iname '*.txt' -type f -size +1c -mtime -1w -maxdepth 2 -print" \
     "$(find_command)"
 check "find accepts it" "0" "$(find_run_built_command)"
 check "and it finds the non-empty text files at depth 2" "2" \
