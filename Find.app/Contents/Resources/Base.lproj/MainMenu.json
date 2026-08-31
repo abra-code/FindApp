@@ -1,0 +1,16 @@
+[
+  {
+    "type": "CommandGroup",
+    "properties": { "placement": "replacing", "placementTarget": "open" },
+    "children": [
+      {
+        "type": "Button",
+        "properties": {
+          "title": "Open…",
+          "actionID": "find.open.from.file.browser",
+          "keyboardShortcut": { "key": "o" }
+        }
+      }
+    ]
+  }
+]

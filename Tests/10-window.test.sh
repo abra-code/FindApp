@@ -5,7 +5,7 @@
 
 section "preconditions"
 _json_name=$(/usr/bin/plutil -extract COMMAND_LIST.1.ACTIONUI_WINDOW.JSON_NAME raw -o - \
-    "$OMCTEST_APP/Contents/Resources/Command.plist" 2>/dev/null)
+    "$OMCTEST_APP/Contents/Resources/Command.json" 2>/dev/null)
 check "the manifest opens an ActionUI window" "Find" "$_json_name"
 check "and that document is in the bundle" "yes" \
     "$([ -f "$OMCTEST_APP/Contents/Resources/Base.lproj/$_json_name.json" ] && echo yes || echo no)"

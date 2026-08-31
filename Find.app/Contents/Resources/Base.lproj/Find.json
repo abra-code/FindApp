@@ -317,7 +317,6 @@
       { "type": "TextEditor", "id": 3, "properties": {
         "text": "/usr/bin/find",
         "readOnly": true,
-        "border": { "color": "secondary", "width": 1 },
         "frame": { "maxWidth": "infinity", "minHeight": 80, "idealHeight": 80, "maxHeight": "infinity" } } }
     ]},
 

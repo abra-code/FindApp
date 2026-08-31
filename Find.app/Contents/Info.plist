@@ -20,7 +20,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>OMCApplet</string>
+	<string>Find</string>
 	<key>CFBundleIconFile</key>
 	<string>Find</string>
 	<key>CFBundleIconName</key>
@@ -53,11 +53,9 @@
 	<key>CFBundleVersion</key>
 	<string>1.2.1</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>11.0</string>
+	<string>14.6</string>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Find.app send AppleEvents to other apps to process found files or directories</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSServices</key>

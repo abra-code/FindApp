@@ -1,0 +1,134 @@
+{
+  "VERSION": 2,
+  "COMMAND_LIST": [
+    {
+      "NAME": "Find",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_shell_script",
+      "COMMAND": [],
+      "NEXT_COMMAND_ID": "find.new",
+      "REQUIRED_OMC_VERSION": "5.1",
+      "REQUIRED_MAC_OS_MIN_VERSION": "14.6"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.new",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_shell_script",
+      "COMMAND": [],
+      "ACTIONUI_WINDOW": {
+        "JSON_NAME": "Find",
+        "INIT_SUBCOMMAND_ID": "find.init",
+        "IS_BLOCKING": false
+      },
+      "REQUIRED_OMC_VERSION": "5.1",
+      "REQUIRED_MAC_OS_MIN_VERSION": "14.6"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.init",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.open.from.file.browser",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file",
+      "COMMAND": [
+        "#using $OMC_DLG_CHOOSE_FOLDER_PATH"
+      ]
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.update.output",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.update.all.controls",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.run",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file_with_output_window",
+      "PROGRESS": {
+        "TITLE": "Searching...",
+        "DELAY": 3
+      },
+      "OUTPUT_WINDOW_SETTINGS": {
+        "WINDOW_TITLE": "Find Results",
+        "WINDOW_TYPE": "regular",
+        "WINDOW_POSITION": "cascade",
+        "WINDOW_WIDTH": 900,
+        "WINDOW_HEIGHT": 500,
+        "TEXT_FONT": "Andale Mono",
+        "TEXT_SIZE": 12
+      }
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.action.choice.change",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.output.choice.change",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.pattern.choice.change",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.permissions.choice.change",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.size.choice.change",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.time.choice.change",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.save.config",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.load.config",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.combo.pick",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    },
+    {
+      "NAME": "Find",
+      "COMMAND_ID": "find.location.dropped",
+      "ACTIVATION_MODE": "act_always",
+      "EXECUTION_MODE": "exe_script_file"
+    }
+  ]
+}
