@@ -340,7 +340,7 @@ list_nested_loose_files() {
 # Every directory under the bundle that codesign could take for a nested bundle.
 # Unordered, possibly with duplicates - the caller dedupes and filters.
 #
-# Found two ways because codesign recognises a bundle two ways. By extension,
+# Found two ways because codesign recognizes a bundle two ways. By extension,
 # and by layout: BBEdit's *.bblm language modules are sealed bundles under an
 # extension no list would guess, and found by name alone they go unsigned, after
 # which the enclosing seal fails on them with "code object is not signed at all /
@@ -461,7 +461,7 @@ app_dir=$(/usr/bin/dirname "$app_to_sign")
 # --no-entitlements-search turns them off and makes the explicit argument the
 # only source. Callers that sign arbitrary bundles should pass it: re-signing
 # drops whatever entitlements the bundle already carried, and picking up an
-# unrelated neighbouring file is worse than dropping them.
+# unrelated neighboring file is worse than dropping them.
 entitlements_file=""
 if [ "$entitlements_search" = "no" ]; then
     if [ -n "$entitlements_override" ]; then
@@ -568,7 +568,7 @@ nested_bundles=$(list_nested_bundles)
 # nested bundles' main executables before phase 3 reaches the bundles
 # themselves, so reading entitlements lazily would read back the stripped ones.
 # The outer bundle is not cached here - phase 4 applies the caller's choice.
-ent_cache_dir=$(/usr/bin/mktemp -d /tmp/codesign_applet_ent.XXXXXX) || exit 1
+ent_cache_dir=$(/usr/bin/mktemp -d "${TMPDIR:-/tmp}/codesign_applet_ent.XXXXXX") || exit 1
 # A signal handler that only cleans up and returns would resume signing with the
 # cache gone, quietly stripping the entitlements from everything left to sign -
 # and would make this script uninterruptible. Each signal cleans up and exits
@@ -712,7 +712,7 @@ verbose_echo "-----------------------------------"
 
 # ---- Phase 3: sign nested code bundles, deepest-first --------------------
 #
-# Discover every candidate bundle directory by recognised extension, then order
+# Discover every candidate bundle directory by recognized extension, then order
 # them deepest-first (most path components first) so children are sealed before
 # the parents that embed them.
 verbose_echo ""
