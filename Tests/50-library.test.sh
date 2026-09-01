@@ -310,12 +310,12 @@ omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$SIZE_COMPARE_ID" +
 omc_control "$SIZE_NUMBER_ID" 1000
 omc_control "$SIZE_UNIT_ID" M
-check "greater than"  "/usr/bin/find -x '$ROOT' -size +1000M -print" "$(find_command)"
+check "greater than"  "/usr/bin/find -x '$ROOT' -size '+1000M' -print" "$(find_command)"
 omc_control "$SIZE_COMPARE_ID" -
-check "less than"     "/usr/bin/find -x '$ROOT' -size -1000M -print" "$(find_command)"
+check "less than"     "/usr/bin/find -x '$ROOT' -size '-1000M' -print" "$(find_command)"
 # find spells "exactly" as a bare number, so the = comparison contributes nothing.
 omc_control "$SIZE_COMPARE_ID" =
-check "exactly"       "/usr/bin/find -x '$ROOT' -size 1000M -print"  "$(find_command)"
+check "exactly"       "/usr/bin/find -x '$ROOT' -size '1000M' -print"  "$(find_command)"
 check "and find accepts it" "0" "$(find_run_built_command)"
 
 section "a size comparison with no number is not a size clause"
@@ -386,25 +386,25 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$ATIME_CHOICE_ID" -
 omc_control "$ATIME_NUMBER_ID" 5
-check "last access is -atime"        "/usr/bin/find -x '$ROOT' -atime -5h -print" "$(find_command)"
+check "last access is -atime"        "/usr/bin/find -x '$ROOT' -atime '-5h' -print" "$(find_command)"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$BTIME_CHOICE_ID" +
 omc_control "$BTIME_NUMBER_ID" 2
 omc_control "$BTIME_UNIT_ID" d
-check "creation time is -Btime"      "/usr/bin/find -x '$ROOT' -Btime +2d -print" "$(find_command)"
+check "creation time is -Btime"      "/usr/bin/find -x '$ROOT' -Btime '+2d' -print" "$(find_command)"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$MTIME_CHOICE_ID" -
 omc_control "$MTIME_NUMBER_ID" 1
 omc_control "$MTIME_UNIT_ID" w
-check "modification time is -mtime"  "/usr/bin/find -x '$ROOT' -mtime -1w -print" "$(find_command)"
+check "modification time is -mtime"  "/usr/bin/find -x '$ROOT' -mtime '-1w' -print" "$(find_command)"
 reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$CTIME_CHOICE_ID" -
 omc_control "$CTIME_NUMBER_ID" 30
 omc_control "$CTIME_UNIT_ID" m
-check "last status change is -ctime"  "/usr/bin/find -x '$ROOT' -ctime -30m -print" "$(find_command)"
+check "last status change is -ctime"  "/usr/bin/find -x '$ROOT' -ctime '-30m' -print" "$(find_command)"
 check "and find accepts it"       "0" "$(find_run_built_command)"
 
 section "a time row with no number is not a time clause"
@@ -431,7 +431,7 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 omc_control "$DEPTH_MIN_ID" 1
 omc_control "$DEPTH_MAX_ID" 1
-check "both bounds"  "/usr/bin/find -x '$ROOT' -mindepth 1 -maxdepth 1 -print" "$(find_command)"
+check "both bounds"  "/usr/bin/find -x '$ROOT' -mindepth '1' -maxdepth '1' -print" "$(find_command)"
 check "which is the top level only" "4" \
     "$(find_run_built_command_output | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
 
@@ -857,12 +857,102 @@ reset_controls_to_app_defaults
 omc_control "$LOCATION_ID" "$ROOT"
 _canary="$OMCTEST_WORK/canary-was-run"
 /bin/rm -f "$_canary"
-omc_control "$PATTERN_ID" "x'\$(/usr/bin/touch $_canary)'y"
+# Two payloads in one, because there are two ways this can regress and they need
+# opposite shapes. If shell_quote is dropped and the value is interpolated bare, the
+# unquoted "$(...)" runs; if it is dropped and the site goes back to wrapping the
+# value in its own '...' - which is the bug this helper was written for - the
+# apostrophes in the first half close that wrapping and the substitution inside runs.
+# Either payload alone passes against the other mutation, which is a check that
+# cannot fail for half the cases it claims to cover.
+omc_control "$PATTERN_ID" "x'\$(/usr/bin/touch $_canary)'z\$(/usr/bin/touch $_canary)y"
 find_run_built_command >/dev/null
 check_absent "a command substitution in a pattern did not run" "$_canary"
 # Positive control: the canary really is reachable when something does run it.
 ( eval "/usr/bin/touch $_canary" )
 check_exists "and the canary is otherwise writable" "$_canary"
+
+# The number fields are text fields like any other. Nothing about them enforces a
+# number: the prompt says "N", the control accepts anything, and a saved config or
+# a recent item can put a value there without anyone typing it.
+#
+# The payloads below carry no apostrophe on purpose. These sites were interpolated
+# bare rather than wrapped in quotes the value could close, so the shape that breaks
+# out is a plain ";" or "$(...)" - an apostrophe here would only be swallowed as a
+# literal and the check would pass whether or not the quoting is there. Each of the
+# three was confirmed to go red with shell_quote removed from its own call site.
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+/bin/rm -f "$_canary"
+omc_control "$DEPTH_MAX_ID" "1\$(/usr/bin/touch $_canary)"
+find_run_built_command >/dev/null
+check_absent "a command substitution in a depth bound did not run" "$_canary"
+
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+/bin/rm -f "$_canary"
+omc_control "$SIZE_COMPARE_ID" +
+omc_control "$SIZE_NUMBER_ID" "1; /usr/bin/touch $_canary; echo "
+find_run_built_command >/dev/null
+check_absent "a statement separator in a size number did not either" "$_canary"
+
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+/bin/rm -f "$_canary"
+omc_control "$MTIME_CHOICE_ID" -
+omc_control "$MTIME_NUMBER_ID" "1\$(/usr/bin/touch $_canary)"
+find_run_built_command >/dev/null
+check_absent "nor one in a time number" "$_canary"
+# Positive control again, since three checks above depend on this canary path.
+( eval "/usr/bin/touch $_canary" )
+check_exists "and that canary is reachable too" "$_canary"
+
+section "an unknown Picker tag is dropped rather than emitted"
+# A Picker looks like a closed set, but ActionUI stores whatever string it is handed
+# (Picker declares parseStringValue = nil), and find.load.config.sh writes any value
+# a config file names into any control id. So these arrive from outside exactly the
+# way a text field does. They cannot be quoted - their tags are multi-word find
+# primaries - so find.library.sh allow-lists them instead.
+_canary="$OMCTEST_WORK/picker-canary"
+
+check_picker_tag_rejected() {
+    reset_controls_to_app_defaults
+    omc_control "$LOCATION_ID" "$ROOT"
+    omc_control "$PATTERN_ID" 'zzz'
+    # The output clause is only emitted when BOTH the kind and the target are set,
+    # so the target has to be filled in or the 901 case would pass by never having
+    # built the clause at all.
+    omc_control "$OUTPUT_TARGET_ID" '/usr/bin/wc -l'
+    /bin/rm -f "$_canary"
+    omc_control "$1" "$2"
+    find_run_built_command >/dev/null
+    check_absent "$3" "$_canary"
+}
+
+check_picker_tag_rejected "$FILE_TYPE_ID"   "d; /usr/bin/touch $_canary; #" \
+    "a planted file type ran nothing"
+check_picker_tag_rejected "$EMPTINESS_ID"   "-empty; /usr/bin/touch $_canary; #" \
+    "nor a planted emptiness test"
+check_picker_tag_rejected "$ACTION_KIND_ID" "-print; /usr/bin/touch $_canary; #" \
+    "nor a planted action"
+check_picker_tag_rejected "$PATTERN_KIND_ID" "-name zzz; /usr/bin/touch $_canary; #" \
+    "nor a planted pattern kind"
+check_picker_tag_rejected "$OUTPUT_KIND_ID" "; /usr/bin/touch $_canary; #" \
+    "nor a planted output kind"
+# Positive control: this canary path is writable, so the five checks above are not
+# passing because nothing could ever have created the file.
+( eval "/usr/bin/touch $_canary" )
+check_exists "and the picker canary is reachable" "$_canary"
+
+# The allow-list must not have made the legitimate tags unreachable.
+reset_controls_to_app_defaults
+omc_control "$LOCATION_ID" "$ROOT"
+omc_control "$FILE_TYPE_ID" '!f'
+check "a real negated file type still works" \
+    "/usr/bin/find -x '$ROOT' -not -type f -print" "$(find_command)"
+omc_control "$FILE_TYPE_ID" "$NO_CHOICE_TAG"
+omc_control "$EMPTINESS_ID" '-not -empty'
+check "and a two-word emptiness test still works" \
+    "/usr/bin/find -x '$ROOT' -not -empty -print" "$(find_command)"
 
 section "everything at once still produces a command find accepts"
 reset_controls_to_app_defaults
@@ -879,7 +969,7 @@ omc_control "$MTIME_NUMBER_ID" 1
 omc_control "$MTIME_UNIT_ID" w
 omc_control "$DEPTH_MAX_ID" 2
 check "the whole command" \
-    "/usr/bin/find -s -x '$ROOT' -iname '*.txt' -type f -size +1c -mtime -1w -maxdepth 2 -print" \
+    "/usr/bin/find -s -x '$ROOT' -iname '*.txt' -type f -size '+1c' -mtime '-1w' -maxdepth '2' -print" \
     "$(find_command)"
 check "find accepts it" "0" "$(find_run_built_command)"
 check "and it finds the non-empty text files at depth 2" "2" \

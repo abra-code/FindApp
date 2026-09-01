@@ -110,10 +110,84 @@ normalize_actionui_controls
 # and handed to eval, so writing '$value' is not escaping: an apostrophe in a folder
 # name breaks the command, and since a dropped path now reaches control 1 from
 # outside, "evil'$(...)'x" would otherwise run arbitrary shell.
+#
+# Every value that reaches the command text as DATA goes through here - paths,
+# patterns, names, and the number fields too. "Number" is what the prompt asks for,
+# not what the control enforces: 611 and 612 are plain text fields like any other,
+# so "2; rm -rf ~ #" is as typeable there as anywhere, and a saved config can put it
+# there with nobody typing at all. Values that are not data are handled two other
+# ways - see reject_unknown_picker_tags for the Pickers, and the comments at 802 and
+# 902 for the two fields that deliberately ask the user for a command.
+#
+# Written as a shell loop rather than the obvious sed pipeline, because that pipeline
+# failed OPEN. sed aborts on an illegal byte sequence in a UTF-8 locale having already
+# emitted a partial stream, and inside $( ) that status is discarded twice over, so a
+# bad byte in the content pattern silently produced "" - and "grep -e ''" matches
+# every file, which with Delete selected is the unfiltered search this file goes out
+# of its way to prevent a hundred lines below. $( ) also strips trailing newlines,
+# which would quietly retarget a search at a folder whose name ends in one. The loop
+# has neither failure mode, and forks nothing.
 shell_quote()
 {
-	printf "'%s'" "$(printf '%s' "$1" | /usr/bin/sed "s/'/'\\\\''/g")"
+	local _rest="$1"
+	local _done=""
+	while :; do
+		case "$_rest" in
+			*"'"*)
+				_done="$_done${_rest%%\'*}'\\''"
+				_rest="${_rest#*\'}"
+				;;
+			*)
+				break
+				;;
+		esac
+	done
+	printf "'%s'" "$_done$_rest"
 }
+
+# ActionUI stores a Picker's value as whatever string it is handed: Picker declares
+# parseStringValue = nil and valueType = String.self, so nothing ever checks a value
+# against the option tags in Find.json. find.load.config.sh replays a config file
+# into "$dialog" <id> <value> without validating either field, and a config is a
+# plain TSV in an Application Support directory this app is not sandboxed away from,
+# listed by name in the Config dropdown. A Picker is therefore no more trustworthy
+# than a text field, and its value reaches the same eval.
+#
+# These five cannot be handled with shell_quote. Their tags are find primaries that
+# are two words ("-not -type", "-not -empty") or a redirection operator, and all of
+# them depend on the shell splitting them - quoting would break the feature. An
+# allow-list is the fix.
+#
+# An unrecognized value falls back to the control's documented default rather than
+# being passed along. For the three with a "no choice" state that means the clause is
+# simply not emitted, so a corrupt or hostile config narrows a search rather than
+# widening or redirecting it.
+reject_unknown_picker_tags()
+{
+	case "$OMC_ACTIONUI_VIEW_101_VALUE" in
+		-iname|-ipath) ;;
+		*) OMC_ACTIONUI_VIEW_101_VALUE="-iname" ;;
+	esac
+	case "$OMC_ACTIONUI_VIEW_201_VALUE" in
+		""|f|d|l|"!f"|"!d"|"!l") ;;
+		*) OMC_ACTIONUI_VIEW_201_VALUE="" ;;
+	esac
+	case "$OMC_ACTIONUI_VIEW_304_VALUE" in
+		""|-empty|"-not -empty") ;;
+		*) OMC_ACTIONUI_VIEW_304_VALUE="" ;;
+	esac
+	case "$OMC_ACTIONUI_VIEW_801_VALUE" in
+		-print|-print0|-ls|-exec|-execdir|-delete) ;;
+		*) OMC_ACTIONUI_VIEW_801_VALUE="-print" ;;
+	esac
+	case "$OMC_ACTIONUI_VIEW_901_VALUE" in
+		""|"|"|">"|"?") ;;
+		*) OMC_ACTIONUI_VIEW_901_VALUE="" ;;
+	esac
+}
+
+# After normalize_actionui_controls, so the "none" sentinel has already become "".
+reject_unknown_picker_tags
 
 get_command_from_dialog_controls()
 {
@@ -203,7 +277,7 @@ get_command_from_dialog_controls()
 			size_choice=""
 		fi
 		local size_scale="$OMC_ACTIONUI_VIEW_303_VALUE"
-		output_command="$output_command -size $size_choice$size_number$size_scale"
+		output_command="$output_command -size $(shell_quote "$size_choice$size_number$size_scale")"
 	fi
 
 	local size_empy_test="$OMC_ACTIONUI_VIEW_304_VALUE"
@@ -292,38 +366,45 @@ get_command_from_dialog_controls()
 	local time_access_number="$OMC_ACTIONUI_VIEW_512_VALUE"
 	if [ -n "$time_access_choice" ] && [ -n "$time_access_number" ]; then
 		local time_access_unit="$OMC_ACTIONUI_VIEW_513_VALUE"
-		output_command="$output_command -atime $time_access_choice$time_access_number$time_access_unit"
+		output_command="$output_command -atime $(shell_quote "$time_access_choice$time_access_number$time_access_unit")"
 	fi
 	
 	local time_creation_choice="$OMC_ACTIONUI_VIEW_521_VALUE"
 	local time_creation_number="$OMC_ACTIONUI_VIEW_522_VALUE"
 	if [ -n "$time_creation_choice" ] && [ -n "$time_creation_number" ]; then
 		local time_creation_unit="$OMC_ACTIONUI_VIEW_523_VALUE"
-		output_command="$output_command -Btime $time_creation_choice$time_creation_number$time_creation_unit"
+		output_command="$output_command -Btime $(shell_quote "$time_creation_choice$time_creation_number$time_creation_unit")"
 	fi
 
 	local time_modification_choice="$OMC_ACTIONUI_VIEW_531_VALUE"
 	local time_modification_number="$OMC_ACTIONUI_VIEW_532_VALUE"
 	if [ -n "$time_modification_choice" ] && [ -n "$time_modification_number" ]; then
 		local time_modification_unit="$OMC_ACTIONUI_VIEW_533_VALUE"
-		output_command="$output_command -mtime $time_modification_choice$time_modification_number$time_modification_unit"
+		output_command="$output_command -mtime $(shell_quote "$time_modification_choice$time_modification_number$time_modification_unit")"
 	fi
 
 	local time_status_choice="$OMC_ACTIONUI_VIEW_541_VALUE"
 	local time_status_number="$OMC_ACTIONUI_VIEW_542_VALUE"
 	if [ -n "$time_status_choice" ] && [ -n "$time_status_number" ]; then
 		local time_status_unit="$OMC_ACTIONUI_VIEW_543_VALUE"
-		output_command="$output_command -ctime $time_status_choice$time_status_number$time_status_unit"
+		output_command="$output_command -ctime $(shell_quote "$time_status_choice$time_status_number$time_status_unit")"
 	fi
 
+	# Trimmed because quoting made padding fatal where word splitting used to hide it:
+	# "-maxdepth '1 '" is an illegal value to find, where "-maxdepth 1 " split back to
+	# "1". A pasted number routinely carries a space.
 	local depth_min="$OMC_ACTIONUI_VIEW_611_VALUE"
+	depth_min="${depth_min#"${depth_min%%[![:space:]]*}"}"
+	depth_min="${depth_min%"${depth_min##*[![:space:]]}"}"
 	if [ -n "$depth_min" ]; then
-		output_command="$output_command -mindepth $depth_min"
+		output_command="$output_command -mindepth $(shell_quote "$depth_min")"
 	fi
 	
 	local depth_max="$OMC_ACTIONUI_VIEW_612_VALUE"
+	depth_max="${depth_max#"${depth_max%%[![:space:]]*}"}"
+	depth_max="${depth_max%"${depth_max##*[![:space:]]}"}"
 	if [ -n "$depth_max" ]; then
-		output_command="$output_command -maxdepth $depth_max"
+		output_command="$output_command -maxdepth $(shell_quote "$depth_max")"
 	fi
 	
 	# The content match. -exec is used here as a CONDITION rather than an action: find
@@ -410,6 +491,8 @@ get_command_from_dialog_controls()
 		action_emitted=1
 	fi
 
+	# Not shell_quoted, and that is the point: this field asks for a tool invocation
+	# with its arguments, so the shell has to see the words as words. See shell_quote.
 	if [ "$action_choice" = "-exec" -o  "$action_choice" = "-execdir" ]; then
 		local action_exec_tool="$OMC_ACTIONUI_VIEW_802_VALUE"
 		if [ -n "$action_exec_tool" ]; then
@@ -432,6 +515,8 @@ get_command_from_dialog_controls()
 	
 	local output_choice="$OMC_ACTIONUI_VIEW_901_VALUE"
 	local output_script="$OMC_ACTIONUI_VIEW_902_VALUE"
+	# ">" takes a save path, which is data and is quoted. The other two branches take
+	# a command to pipe into or to append verbatim, so they stay raw. See shell_quote.
 	if [ -n "$output_choice" ] && [ -n "$output_script" ]; then
 		if [ "$output_choice" = ">" ]; then
 			output_command="$output_command > $(shell_quote "$output_script")"

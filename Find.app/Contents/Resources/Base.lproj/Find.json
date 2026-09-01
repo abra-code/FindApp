@@ -1701,7 +1701,7 @@
             "properties": {
                 "padding": {
                     "top": 8,
-                    "bottom": 12,
+                    "bottom": 12
                 },
                 "spacing": 10
             },
